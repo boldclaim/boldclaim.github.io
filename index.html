@@ -249,6 +249,28 @@
     <footer class="border-t border-zinc-200 dark:border-zinc-800 px-3 sm:px-4 pt-3 pb-4 shrink-0 bg-stone-50 dark:bg-zinc-950">
       <div class="max-w-2xl mx-auto">
 
+        <!-- Quick platform/tone selectors -->
+        <div class="flex flex-wrap items-center gap-1.5 mb-2 px-1 text-xs">
+          <span class="text-zinc-400 dark:text-zinc-600">Für</span>
+          <select x-model="settings.platform" @change="saveSettings()"
+                  class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-md px-2 py-1 font-medium text-zinc-700 dark:text-zinc-300 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600 cursor-pointer">
+            <option>Reddit</option>
+            <option>X/Twitter</option>
+            <option>Mündlich</option>
+            <option>WhatsApp</option>
+          </select>
+          <span class="text-zinc-400 dark:text-zinc-600">im Ton</span>
+          <select x-model="settings.tone" @change="saveSettings()"
+                  class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-md px-2 py-1 font-medium text-zinc-700 dark:text-zinc-300 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600 cursor-pointer">
+            <option>Sachlich</option>
+            <option>Hämisch</option>
+            <option>Gungho</option>
+            <option>De-eskalierend</option>
+            <option>Fact-Check pur</option>
+            <option>Taktik entblößen</option>
+          </select>
+        </div>
+
         <!-- Pending images -->
         <div x-show="pendingImages.length" class="flex flex-wrap gap-2 mb-2">
           <template x-for="(img, i) in pendingImages" :key="i">
@@ -391,6 +413,7 @@
                 <option>Gungho</option>
                 <option>De-eskalierend</option>
                 <option>Fact-Check pur</option>
+                <option>Taktik entblößen</option>
               </select>
             </div>
           </div>
@@ -849,10 +872,44 @@
       },
 
       fallbackSystemPrompt() {
+        const tone = this.settings.tone;
+        let toneInstruction = '';
+        if (tone === 'Sachlich') {
+          toneInstruction = 'Sachlich, ohne Häme, faktenfest. Quellen am Ende.';
+        } else if (tone === 'Hämisch') {
+          toneInstruction = 'Sachlich plus zugespitzte Häme an 1-2 Stellen, nie billig. Quellen am Ende.';
+        } else if (tone === 'Gungho') {
+          toneInstruction = 'Vernichtend, keine Konzessionen, nur Aktenlage gegen Behauptung. Schwache eigene Punkte weglassen statt einbauen. Schluss-Satz darf zugespitzt sein. Quellen am Ende.';
+        } else if (tone === 'De-eskalierend') {
+          toneInstruction = 'Validiere Emotion, sanft auf Fakten hinweisen ohne Angriff, Off-Ramp anbieten, Beziehung schützen.';
+        } else if (tone === 'Fact-Check pur') {
+          toneInstruction = 'Kein Rhetorik, kein Ton. Pro Behauptung: Bewertung (Wahr/Teilweise/Irreführend/Falsch) + korrekte Fakten + Quelle. Tabellen-artig.';
+        } else if (tone === 'Taktik entblößen') {
+          toneInstruction = `Bonusmodus Taktik-Entblößung. Vorgehen:
+1. Identifiziere die rhetorische Tactic des Gegners und benenne sie EXPLIZIT beim Namen. Mögliche Tactics: Quote-Mining, Cherry-Picking, Strohmann, Whataboutism, Goalpost-Verschiebung, "Bullshit"-Stempel, Frame-Kollaps-Verweigerung, Drei-Ebenen-Verklebung (Roh-Daten vs Modell-Aggregat vs Kausal-Zuordnung), Disziplin-Wash (fachfremde Autoren als Experten), Peer-Review-Trumpf, Atlas-Network-Talking-Points, Mainstream-Diss, Selbstwiderspruch im selben Post, Side-Step, Selektives Gedächtnis, Verfahrens-Verklebung (verschiedene Spuren in eine Story).
+2. Faktenkorrektur kompakt mit verlinkten Quellen (bare URLs am Ende).
+3. Greife NUR die 1-3 größten Schwachstellen an, nicht jeden Punkt.
+4. Maximum 150 Wörter. Keine Einleitung, kein Wrap-up.
+5. Erstes Wort soll der Tactic-Name sein. Beispiel: "Quote-Mining: Der Autor schreibt selbst..."
+6. Mitleser sollen die Methode erkennen, nicht der Gegner überzeugt werden.`;
+        } else {
+          toneInstruction = `Ton: ${tone}. Sachlich faktenfest.`;
+        }
+
         return `Du bist Boldclaim, ein Assistent für faktenbasierte Counter-Speech.
-Plattform: ${this.settings.platform}. Ton: ${this.settings.tone}. Sprache: ${this.settings.lang}.
-Punkt zuerst, max 220 Wörter, Quellen als bare URLs am Ende.
-Niemals fremdenfeindlich argumentieren. Wenn ein Punkt nur teils-stimmt, weglassen statt konzedieren bei Gungho-Ton.`;
+Plattform: ${this.settings.platform}. Sprache: ${this.settings.lang}.
+
+TON-MODUS: ${tone}
+${toneInstruction}
+
+GENERELLE REGELN:
+- Punkt zuerst, Kontext danach
+- Inline-Quellen als bare URLs am Ende
+- Kein Markdown, kein Reddit-Quote-Format
+- Wenn unklar was gewünscht, EINMAL nachfragen, beim 2. Turn antworte best-guess
+- Wenn User Bild geschickt hat: lies Text/Kontext im Bild und gehe darauf ein
+
+NIEMALS fremdenfeindlich argumentieren. Keine Statistiken die Gruppen pauschal abwerten.`;
       },
 
       // Provider call dispatch
