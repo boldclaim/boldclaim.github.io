@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="de" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="description" content="Boldclaim — Bring your own AI. Wir sehen deine Counter nie.">
+  <meta name="theme-color" content="#0a0a0a">
+  <title>Boldclaim</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>•</text></svg>">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
+            mono: ['JetBrains Mono', 'ui-monospace', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    html, body { height: 100%; overscroll-behavior: none; }
+    body { -webkit-font-smoothing: antialiased; }
+    .scroll-area::-webkit-scrollbar { width: 6px; }
+    .scroll-area::-webkit-scrollbar-thumb { background: rgba(160,160,160,0.25); border-radius: 3px; }
+    .scroll-area::-webkit-scrollbar-track { background: transparent; }
+    [x-cloak] { display: none !important; }
+    .msg-fade { animation: fadeIn .25s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+    .typing::after {
+      content: '▍';
+      animation: blink 1s steps(2) infinite;
+      color: rgba(255,255,255,.5);
+      margin-left: 2px;
+    }
+    @keyframes blink { 50% { opacity: 0; } }
+    textarea { field-sizing: content; }
+    .topic-pill { transition: background .15s, transform .1s; }
+    .topic-pill:active { transform: scale(0.97); }
+    .drag-over { outline: 2px dashed rgba(255,255,255,.3); outline-offset: -8px; border-radius: 18px; }
+    .modal-backdrop { backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+  </style>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"></script>
+</head>
+<body class="h-full bg-zinc-950 text-zinc-100 font-sans antialiased">
+
+<div x-data="boldclaimApp()" x-init="init()" x-cloak class="flex flex-col h-full">
+
+  <!-- Header -->
+  <header class="flex items-center justify-between px-4 sm:px-6 h-12 border-b border-zinc-800 shrink-0">
+    <div class="flex items-center gap-2">
+      <span class="text-base font-semibold tracking-tight">Boldclaim</span>
+      <span class="text-xs text-zinc-500 font-mono hidden sm:inline">v2.0</span>
+    </div>
+    <div class="flex items-center gap-1">
+      <button @click="newChat()" title="Neuer Chat"
+              class="p-2 rounded-md text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900 transition">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+      </button>
+      <button @click="settingsOpen=true" title="Einstellungen"
+              class="p-2 rounded-md text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900 transition">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- Onboarding banner (if no key) -->
+  <div x-show="!hasKey() && !settingsOpen && messages.length === 0"
+       class="bg-amber-500/10 border-b border-amber-500/20 text-amber-200 text-sm px-4 sm:px-6 py-2 flex items-center justify-between">
+    <span>Du brauchst einen API-Key. Setup in 60 Sekunden.</span>
+    <button @click="settingsOpen=true; settingsTab='onboarding'"
+            class="font-medium underline hover:no-underline">Einrichten</button>
+  </div>
+
+  <!-- Main scroll area -->
+  <main class="flex-1 overflow-y-auto scroll-area"
+        @drop.prevent="handleDrop($event)"
+        @dragover.prevent="dragOver=true"
+        @dragleave="dragOver=false"
+        :class="dragOver && 'drag-over'">
+
+    <!-- Welcome state -->
+    <div x-show="messages.length === 0" class="max-w-2xl mx-auto px-6 pt-16 sm:pt-24 pb-8">
+      <h1 class="text-3xl sm:text-4xl font-semibold tracking-tight">Paste, drop, counter.</h1>
+      <p class="mt-3 text-zinc-400 text-lg">
+        Reddit-Comment einfügen, Screenshot droppen, oder Thema beschreiben.
+      </p>
+      <div class="mt-8 flex flex-wrap gap-2">
+        <template x-for="t in topics" :key="t.label">
+          <button @click="usePill(t)"
+                  class="topic-pill text-sm px-3.5 py-1.5 rounded-full bg-zinc-800/70 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 hover:border-zinc-600">
+            <span x-text="t.label"></span>
+          </button>
+        </template>
+      </div>
+      <div class="mt-12 text-xs text-zinc-600">
+        Erstes Mal hier?
+        <button @click="settingsOpen=true; settingsTab='onboarding'"
+                class="underline hover:text-zinc-400">Setup-Anleitung</button>
+        ·
+        <button @click="settingsOpen=true; settingsTab='privacy'"
+                class="underline hover:text-zinc-400">So funktioniert Privacy</button>
+      </div>
+    </div>
+
+    <!-- Messages -->
+    <div x-show="messages.length > 0" class="max-w-2xl mx-auto px-4 sm:px-6 py-6 space-y-6">
+      <template x-for="msg in messages" :key="msg.id">
+        <div :class="msg.role === 'user' ? 'flex justify-end' : 'flex justify-start'" class="msg-fade">
+          <div :class="msg.role === 'user' ? 'bg-zinc-800 border border-zinc-700 rounded-2xl rounded-tr-sm' : 'bg-transparent'"
+               class="max-w-full sm:max-w-[85%] px-4 py-2.5">
+
+            <!-- Images -->
+            <template x-if="msg.images && msg.images.length">
+              <div class="flex flex-wrap gap-2 mb-2">
+                <template x-for="(img, i) in msg.images" :key="i">
+                  <img :src="img" @click="lightboxImg=img"
+                       class="rounded-lg max-h-48 cursor-zoom-in border border-zinc-800">
+                </template>
+              </div>
+            </template>
+
+            <!-- Body -->
+            <div class="whitespace-pre-wrap leading-relaxed text-[15px]"
+                 :class="msg.streaming && 'typing'"
+                 x-text="msg.content"></div>
+
+            <!-- Footer (assistant only) -->
+            <template x-if="msg.role === 'assistant' && !msg.streaming">
+              <div class="mt-2 flex items-center gap-3 text-xs text-zinc-500">
+                <button @click="copy(msg.content, $event)" class="hover:text-zinc-200 flex items-center gap-1">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                  <span x-text="msg.copied ? 'kopiert' : 'kopieren'"></span>
+                </button>
+                <template x-if="msg.sources && msg.sources.length">
+                  <details class="group">
+                    <summary class="cursor-pointer hover:text-zinc-200 list-none flex items-center gap-1">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="transition group-open:rotate-90"><polyline points="9 18 15 12 9 6"/></svg>
+                      <span>Quellen (<span x-text="msg.sources.length"></span>)</span>
+                    </summary>
+                    <div class="mt-2 space-y-1.5 text-zinc-400">
+                      <template x-for="(s, i) in msg.sources" :key="i">
+                        <div class="border-l border-zinc-800 pl-3">
+                          <div class="text-[11px] font-mono text-zinc-500" x-text="s.source"></div>
+                          <div class="text-[12px]" x-text="s.snippet"></div>
+                        </div>
+                      </template>
+                    </div>
+                  </details>
+                </template>
+              </div>
+            </template>
+
+            <!-- Error -->
+            <template x-if="msg.error">
+              <div class="mt-2 text-xs text-red-400 border-l-2 border-red-500/50 pl-2">
+                <span x-text="msg.error"></span>
+                <button @click="settingsOpen=true" class="underline ml-1">Settings</button>
+              </div>
+            </template>
+          </div>
+        </div>
+      </template>
+    </div>
+  </main>
+
+  <!-- Composer -->
+  <footer class="border-t border-zinc-800 px-3 sm:px-4 pt-3 pb-4 shrink-0 bg-zinc-950">
+    <div class="max-w-2xl mx-auto">
+
+      <!-- Pending images -->
+      <div x-show="pendingImages.length" class="flex flex-wrap gap-2 mb-2">
+        <template x-for="(img, i) in pendingImages" :key="i">
+          <div class="relative">
+            <img :src="img" class="h-16 w-16 object-cover rounded-md border border-zinc-800">
+            <button @click="pendingImages.splice(i,1)"
+                    class="absolute -top-1.5 -right-1.5 bg-zinc-700 hover:bg-zinc-600 text-zinc-100 rounded-full w-5 h-5 flex items-center justify-center text-xs">×</button>
+          </div>
+        </template>
+      </div>
+
+      <div class="flex items-end gap-2 bg-zinc-800/70 rounded-2xl px-3 py-2 border border-zinc-700 ring-1 ring-white/5 shadow-xl shadow-black/40 focus-within:border-zinc-600 focus-within:ring-white/10 transition">
+        <button @click="$refs.fileInput.click()"
+                title="Bild anhängen"
+                class="p-1.5 text-zinc-400 hover:text-zinc-200 transition shrink-0">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+        </button>
+        <input type="file" multiple accept="image/*" x-ref="fileInput" @change="handleFiles($event)" class="hidden">
+        <textarea x-model="input"
+                  @paste="handlePaste($event)"
+                  @keydown.enter.prevent="if(!$event.shiftKey) send()"
+                  @keydown.cmd.enter.prevent="send()"
+                  @keydown.ctrl.enter.prevent="send()"
+                  rows="1"
+                  :placeholder="busy ? 'Boldclaim antwortet...' : 'Comment einfügen, Bild droppen oder Thema beschreiben...'"
+                  :disabled="busy"
+                  class="flex-1 bg-transparent resize-none outline-none text-[15px] py-1.5 max-h-48 placeholder-zinc-400 text-zinc-50"></textarea>
+        <button @click="busy ? cancel() : send()"
+                :disabled="!busy && !canSend()"
+                :class="busy ? 'bg-red-500/80 hover:bg-red-500' : (canSend() ? 'bg-zinc-100 text-zinc-900 hover:bg-white' : 'bg-zinc-800 text-zinc-600')"
+                class="rounded-full p-1.5 transition shrink-0">
+          <template x-if="!busy">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l14 0M13 6l6 6-6 6"/></svg>
+          </template>
+          <template x-if="busy">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>
+          </template>
+        </button>
+      </div>
+      <div class="mt-1.5 px-2 flex items-center justify-between text-[11px] text-zinc-600">
+        <span x-text="modelLabel()"></span>
+        <span x-show="messages.length > 0" x-text="`${countUserMsgs()} Turn${countUserMsgs()===1?'':'s'}`"></span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Settings Modal -->
+  <div x-show="settingsOpen"
+       x-transition.opacity
+       @click.self="settingsOpen=false"
+       class="fixed inset-0 modal-backdrop bg-black/60 flex items-end sm:items-center justify-center z-40 p-0 sm:p-4">
+    <div @click.stop
+         class="bg-zinc-900 border-t sm:border border-zinc-800 sm:rounded-2xl w-full sm:max-w-md max-h-[90vh] overflow-y-auto scroll-area">
+
+      <!-- Tabs -->
+      <div class="flex border-b border-zinc-800 sticky top-0 bg-zinc-900 z-10">
+        <button @click="settingsTab='general'"
+                :class="settingsTab==='general' ? 'text-zinc-100 border-zinc-100' : 'text-zinc-500 border-transparent'"
+                class="flex-1 py-3 text-sm font-medium border-b-2 transition">Allgemein</button>
+        <button @click="settingsTab='onboarding'"
+                :class="settingsTab==='onboarding' ? 'text-zinc-100 border-zinc-100' : 'text-zinc-500 border-transparent'"
+                class="flex-1 py-3 text-sm font-medium border-b-2 transition">Setup</button>
+        <button @click="settingsTab='privacy'"
+                :class="settingsTab==='privacy' ? 'text-zinc-100 border-zinc-100' : 'text-zinc-500 border-transparent'"
+                class="flex-1 py-3 text-sm font-medium border-b-2 transition">Privacy</button>
+      </div>
+
+      <div class="p-5 space-y-5">
+
+        <!-- General tab -->
+        <div x-show="settingsTab==='general'" class="space-y-5">
+          <div>
+            <label class="text-xs font-medium text-zinc-400 uppercase tracking-wide">Provider</label>
+            <select x-model="settings.provider" @change="onProviderChange()"
+                    class="mt-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-zinc-700">
+              <option value="anthropic">Anthropic (Claude)</option>
+              <option value="openai">OpenAI (GPT)</option>
+              <option value="moonshot">Moonshot (Kimi)</option>
+              <option value="openrouter">OpenRouter</option>
+              <option value="ollama">Ollama (lokal)</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="text-xs font-medium text-zinc-400 uppercase tracking-wide">Modell</label>
+            <input x-model="settings.model"
+                   :placeholder="defaultModel(settings.provider)"
+                   class="mt-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:border-zinc-700">
+          </div>
+
+          <div>
+            <label class="text-xs font-medium text-zinc-400 uppercase tracking-wide">API-Key</label>
+            <div class="mt-1.5 flex gap-2">
+              <input :type="showKey ? 'text' : 'password'"
+                     x-model="settings.apiKey"
+                     :placeholder="keyPlaceholder(settings.provider)"
+                     class="flex-1 bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm font-mono focus:outline-none focus:border-zinc-700">
+              <button @click="showKey=!showKey"
+                      class="px-3 bg-zinc-800 hover:bg-zinc-700 rounded-lg text-sm">
+                <span x-text="showKey ? 'verbergen' : 'zeigen'"></span>
+              </button>
+            </div>
+            <div class="mt-2 flex items-center gap-2">
+              <button @click="testKey()"
+                      :disabled="!settings.apiKey || testing"
+                      class="text-xs px-3 py-1.5 bg-zinc-100 text-zinc-900 hover:bg-white rounded-md font-medium disabled:opacity-50">
+                <span x-text="testing ? 'teste...' : 'Verbindung testen'"></span>
+              </button>
+              <span class="text-xs" :class="testStatusColor()" x-text="testStatus"></span>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="text-xs font-medium text-zinc-400 uppercase tracking-wide">Plattform</label>
+              <select x-model="settings.platform"
+                      class="mt-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-zinc-700">
+                <option>Reddit</option>
+                <option>X/Twitter</option>
+                <option>Mündlich</option>
+                <option>WhatsApp</option>
+              </select>
+            </div>
+            <div>
+              <label class="text-xs font-medium text-zinc-400 uppercase tracking-wide">Ton</label>
+              <select x-model="settings.tone"
+                      class="mt-1.5 w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-zinc-700">
+                <option>Sachlich</option>
+                <option>Hämisch</option>
+                <option>Gungho</option>
+                <option>De-eskalierend</option>
+                <option>Fact-Check pur</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="pt-3 border-t border-zinc-800 space-y-2">
+            <button @click="exportConversations()"
+                    class="w-full text-left text-sm px-3 py-2 bg-zinc-950 hover:bg-zinc-800 rounded-lg border border-zinc-800">
+              Conversation-History exportieren (JSON)
+            </button>
+            <button @click="clearAll()"
+                    class="w-full text-left text-sm px-3 py-2 bg-red-500/5 hover:bg-red-500/15 rounded-lg border border-red-500/20 text-red-300">
+              Alle lokalen Daten löschen
+            </button>
+          </div>
+        </div>
+
+        <!-- Onboarding tab -->
+        <div x-show="settingsTab==='onboarding'" class="space-y-4 text-sm">
+          <p class="text-zinc-300">Boldclaim braucht einen API-Key von einem KI-Anbieter. Du wählst, du zahlst, du behältst die Kontrolle.</p>
+
+          <div class="space-y-3">
+            <div class="border border-zinc-800 rounded-lg p-3">
+              <div class="font-medium text-zinc-100">Anthropic (Claude) <span class="text-xs text-zinc-500 font-normal">empfohlen</span></div>
+              <div class="text-zinc-400 text-xs mt-0.5">Beste Counter-Qualität. ~$0.01 pro Counter.</div>
+              <a href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener"
+                 class="text-xs text-zinc-100 underline mt-1 inline-block">Key holen →</a>
+            </div>
+            <div class="border border-zinc-800 rounded-lg p-3">
+              <div class="font-medium text-zinc-100">OpenAI (GPT)</div>
+              <div class="text-zinc-400 text-xs mt-0.5">Solide Alternative. ~$0.01 pro Counter.</div>
+              <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener"
+                 class="text-xs text-zinc-100 underline mt-1 inline-block">Key holen →</a>
+            </div>
+            <div class="border border-zinc-800 rounded-lg p-3">
+              <div class="font-medium text-zinc-100">Moonshot (Kimi)</div>
+              <div class="text-zinc-400 text-xs mt-0.5">Günstigste Option. ~$0.001 pro Counter.</div>
+              <a href="https://platform.moonshot.cn" target="_blank" rel="noopener"
+                 class="text-xs text-zinc-100 underline mt-1 inline-block">Key holen →</a>
+            </div>
+          </div>
+
+          <button @click="settingsTab='general'"
+                  class="w-full bg-zinc-100 text-zinc-900 hover:bg-white rounded-lg py-2 text-sm font-medium">
+            Weiter zu Provider-Auswahl
+          </button>
+        </div>
+
+        <!-- Privacy tab -->
+        <div x-show="settingsTab==='privacy'" class="space-y-3 text-sm text-zinc-300">
+          <p class="font-medium text-zinc-100">So funktioniert Privacy bei Boldclaim:</p>
+          <ol class="list-decimal pl-5 space-y-1.5 text-zinc-400">
+            <li>Dein API-Key wird nur in deinem Browser gespeichert (localStorage).</li>
+            <li>Dein Counter-Text geht direkt von deinem Browser zu deinem Provider.</li>
+            <li>Boldclaim sieht beides nie. Wir loggen nur anonyme Pinecone-Queries.</li>
+            <li>Dein Provider (Anthropic, OpenAI, etc.) sieht deine Counter — das ist deren Job. Wir nicht.</li>
+          </ol>
+          <p class="pt-2 text-xs text-zinc-500">
+            Quellcode öffentlich auf GitHub. Keine Cookies, keine Tracker, kein Analytics.
+          </p>
+        </div>
+
+        <button @click="saveSettings(); settingsOpen=false"
+                class="w-full bg-zinc-100 text-zinc-900 hover:bg-white rounded-lg py-2.5 text-sm font-semibold">
+          Speichern und schließen
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lightbox -->
+  <div x-show="lightboxImg"
+       x-transition.opacity
+       @click="lightboxImg=null"
+       class="fixed inset-0 bg-black/90 flex items-center justify-center z-50 cursor-zoom-out p-4">
+    <img :src="lightboxImg" class="max-w-full max-h-full rounded-lg">
+  </div>
+
+</div>
+
+<script>
+  // WORKER_URL leer = kein Pinecone-Context, kein externer Request, kein Tracking-Vector.
+  // Wenn du später Pinecone-RAG zuschalten willst: hier neue (anonyme) Worker-URL eintragen.
+  const WORKER_URL = '';
+
+  const PROVIDERS = {
+    anthropic: {
+      defaultModel: 'claude-sonnet-4-6',
+      keyPlaceholder: 'sk-ant-...',
+      keyPattern: /^sk-ant-/,
+      url: 'https://api.anthropic.com/v1/messages',
+      vision: true
+    },
+    openai: {
+      defaultModel: 'gpt-5',
+      keyPlaceholder: 'sk-...',
+      keyPattern: /^sk-/,
+      url: 'https://api.openai.com/v1/chat/completions',
+      vision: true
+    },
+    moonshot: {
+      defaultModel: 'kimi-k2-0926',
+      keyPlaceholder: 'sk-...',
+      keyPattern: /^sk-/,
+      url: 'https://api.moonshot.cn/v1/chat/completions',
+      vision: false
+    },
+    openrouter: {
+      defaultModel: 'anthropic/claude-sonnet-4.6',
+      keyPlaceholder: 'sk-or-...',
+      keyPattern: /^sk-or-/,
+      url: 'https://openrouter.ai/api/v1/chat/completions',
+      vision: true
+    },
+    ollama: {
+      defaultModel: 'llama3.2',
+      keyPlaceholder: 'localhost:11434',
+      keyPattern: /./,
+      url: 'http://localhost:11434/api/chat',
+      vision: false
+    }
+  };
+
+  const TOPICS = [
+    { label: 'Migration', sample: 'Mein Onkel sagt: "Bürgergeld nur für Migranten, Deutsche kriegen nichts mehr." Wie konter ich das?' },
+    { label: 'AfD', sample: 'Ein Kollege meint die AfD sei "die einzige normale Partei". Was sind die besten Gegenpunkte?' },
+    { label: 'Energie', sample: 'Schreib mir einen sachlichen Konter zu: "Die Energiewende hat uns die teuersten Strompreise Europas beschert."' },
+    { label: 'Bürgergeld', sample: 'Reddit-Comment: "Wer arbeiten geht ist der Dumme, Bürgergeld lohnt sich mehr." Konter?' },
+    { label: 'Klima', sample: 'Konter zu: "Deutschland macht 2% vom CO2 weltweit, was bringts?"' },
+    { label: 'Eliten', sample: '"Politiker bereichern sich, das System ist korrupt." — was sage ich dem?' },
+    { label: 'EU', sample: '"Die EU diktiert uns alles, raus da." Konter sachlich.' },
+    { label: 'Gender', sample: 'Konter zu: "Gendern zerstört die deutsche Sprache."' }
+  ];
+
+  function boldclaimApp() {
+    return {
+      // State
+      messages: [],
+      input: '',
+      pendingImages: [],
+      busy: false,
+      currentAbort: null,
+      dragOver: false,
+      lightboxImg: null,
+      settingsOpen: false,
+      settingsTab: 'general',
+      showKey: false,
+      testing: false,
+      testStatus: '',
+      testStatusOk: null,
+      topics: TOPICS,
+
+      settings: {
+        provider: 'anthropic',
+        model: '',
+        apiKey: '',
+        platform: 'Reddit',
+        tone: 'Sachlich',
+        lang: 'de'
+      },
+
+      // Init
+      init() {
+        const saved = localStorage.getItem('boldclaim_settings_v2');
+        if (saved) {
+          try { Object.assign(this.settings, JSON.parse(saved)); } catch (e) {}
+        }
+        if (!this.settings.model) this.settings.model = this.defaultModel(this.settings.provider);
+        const session = localStorage.getItem('boldclaim_session_v2');
+        if (session) {
+          try {
+            const s = JSON.parse(session);
+            if (s.messages && Date.now() - s.ts < 24 * 3600 * 1000) {
+              this.messages = s.messages;
+            }
+          } catch (e) {}
+        }
+      },
+
+      // Computed
+      hasKey() { return this.settings.apiKey && this.settings.apiKey.length > 8; },
+      canSend() { return (this.input.trim() || this.pendingImages.length) && this.hasKey() && !this.busy; },
+      countUserMsgs() { return this.messages.filter(m => m.role === 'user').length; },
+      modelLabel() {
+        if (!this.hasKey()) return 'Kein API-Key — Settings öffnen';
+        return `${this.settings.provider} · ${this.settings.model || this.defaultModel(this.settings.provider)}`;
+      },
+      defaultModel(p) { return PROVIDERS[p]?.defaultModel || ''; },
+      keyPlaceholder(p) { return PROVIDERS[p]?.keyPlaceholder || ''; },
+      testStatusColor() {
+        if (this.testStatusOk === true) return 'text-emerald-400';
+        if (this.testStatusOk === false) return 'text-red-400';
+        return 'text-zinc-500';
+      },
+
+      // Settings
+      onProviderChange() {
+        this.settings.model = this.defaultModel(this.settings.provider);
+        this.testStatus = '';
+        this.testStatusOk = null;
+      },
+      saveSettings() {
+        localStorage.setItem('boldclaim_settings_v2', JSON.stringify(this.settings));
+      },
+      async testKey() {
+        this.testing = true;
+        this.testStatus = '';
+        this.testStatusOk = null;
+        try {
+          const reply = await this.callProvider({
+            systemPrompt: 'Antworte nur mit dem Wort: ok',
+            messages: [{ role: 'user', content: 'test' }],
+            stream: false
+          });
+          if (reply && reply.toLowerCase().includes('ok')) {
+            this.testStatus = '✓ Verbunden';
+            this.testStatusOk = true;
+          } else {
+            this.testStatus = 'Antwort erhalten, aber unerwartet';
+            this.testStatusOk = true;
+          }
+        } catch (e) {
+          this.testStatus = e.message.slice(0, 80);
+          this.testStatusOk = false;
+        } finally {
+          this.testing = false;
+        }
+      },
+
+      // Compose
+      usePill(t) {
+        this.input = t.sample;
+        this.$nextTick(() => {
+          const ta = document.querySelector('textarea');
+          if (ta) ta.focus();
+        });
+      },
+      handlePaste(e) {
+        const items = e.clipboardData?.items;
+        if (!items) return;
+        for (const item of items) {
+          if (item.type?.startsWith('image/')) {
+            e.preventDefault();
+            const file = item.getAsFile();
+            if (file) this.addImage(file);
+          }
+        }
+      },
+      handleDrop(e) {
+        this.dragOver = false;
+        const files = e.dataTransfer?.files;
+        if (!files) return;
+        for (const f of files) {
+          if (f.type.startsWith('image/')) this.addImage(f);
+        }
+      },
+      handleFiles(e) {
+        for (const f of e.target.files || []) {
+          if (f.type.startsWith('image/')) this.addImage(f);
+        }
+        e.target.value = '';
+      },
+      addImage(file) {
+        if (this.pendingImages.length >= 5) return;
+        if (file.size > 5 * 1024 * 1024) {
+          alert('Bild zu groß (max 5 MB)');
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = () => this.pendingImages.push(reader.result);
+        reader.readAsDataURL(file);
+      },
+
+      // Send
+      async send() {
+        if (!this.canSend()) return;
+        const userMsg = {
+          id: crypto.randomUUID(),
+          role: 'user',
+          content: this.input.trim(),
+          images: [...this.pendingImages],
+          ts: Date.now()
+        };
+        this.messages.push(userMsg);
+        this.input = '';
+        this.pendingImages = [];
+        this.persistSession();
+        this.scrollDown();
+
+        // Pinecone-Context fetch — nur wenn WORKER_URL gesetzt ist (sonst kein externer Request)
+        let context = { docs: [], systemPrompt: this.fallbackSystemPrompt() };
+        if (WORKER_URL) {
+          try {
+            const ctxRes = await fetch(WORKER_URL, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                query: this.queryFromHistory(),
+                topK: 5,
+                platform: this.settings.platform,
+                tone: this.settings.tone,
+                lang: this.settings.lang
+              })
+            });
+            if (ctxRes.ok) context = await ctxRes.json();
+          } catch (e) { /* fallback */ }
+        }
+
+        // Build provider messages
+        const providerMessages = this.buildProviderMessages();
+        const assistantMsg = {
+          id: crypto.randomUUID(),
+          role: 'assistant',
+          content: '',
+          streaming: true,
+          sources: context.docs || [],
+          ts: Date.now()
+        };
+        this.messages.push(assistantMsg);
+        this.busy = true;
+        this.scrollDown();
+
+        try {
+          await this.callProvider({
+            systemPrompt: context.systemPrompt,
+            messages: providerMessages,
+            stream: true,
+            onDelta: (text) => {
+              assistantMsg.content += text;
+              this.scrollDown();
+            }
+          });
+        } catch (e) {
+          assistantMsg.error = e.message;
+        } finally {
+          assistantMsg.streaming = false;
+          this.busy = false;
+          this.currentAbort = null;
+          this.persistSession();
+        }
+      },
+
+      cancel() {
+        if (this.currentAbort) this.currentAbort.abort();
+      },
+
+      queryFromHistory() {
+        const recentUser = this.messages
+          .filter(m => m.role === 'user')
+          .slice(-2)
+          .map(m => m.content)
+          .join(' ');
+        return recentUser.slice(0, 1000);
+      },
+
+      buildProviderMessages() {
+        const out = [];
+        for (const m of this.messages) {
+          if (m.role === 'user') {
+            const provider = PROVIDERS[this.settings.provider];
+            if (m.images?.length && provider.vision) {
+              if (this.settings.provider === 'anthropic') {
+                const content = [];
+                for (const img of m.images) {
+                  const [meta, data] = img.split(',');
+                  const mime = meta.match(/data:([^;]+)/)?.[1] || 'image/png';
+                  content.push({ type: 'image', source: { type: 'base64', media_type: mime, data } });
+                }
+                content.push({ type: 'text', text: m.content || '(siehe Bild)' });
+                out.push({ role: 'user', content });
+              } else if (this.settings.provider === 'openai' || this.settings.provider === 'openrouter') {
+                const content = [{ type: 'text', text: m.content || '(siehe Bild)' }];
+                for (const img of m.images) content.push({ type: 'image_url', image_url: { url: img } });
+                out.push({ role: 'user', content });
+              } else {
+                out.push({ role: 'user', content: m.content + '\n\n[Bild im Anhang, Provider unterstützt keine Vision]' });
+              }
+            } else {
+              out.push({ role: 'user', content: m.content });
+            }
+          } else if (m.role === 'assistant' && m.content && !m.error) {
+            out.push({ role: 'assistant', content: m.content });
+          }
+        }
+        return out;
+      },
+
+      fallbackSystemPrompt() {
+        return `Du bist Boldclaim, ein Assistent für faktenbasierte Counter-Speech.
+Plattform: ${this.settings.platform}. Ton: ${this.settings.tone}. Sprache: ${this.settings.lang}.
+Punkt zuerst, max 220 Wörter, Quellen als bare URLs am Ende.
+Niemals fremdenfeindlich argumentieren.`;
+      },
+
+      // Provider call dispatch
+      async callProvider({ systemPrompt, messages, stream = false, onDelta }) {
+        const p = this.settings.provider;
+        if (p === 'anthropic') return this.callAnthropic({ systemPrompt, messages, stream, onDelta });
+        if (p === 'openai' || p === 'moonshot' || p === 'openrouter') return this.callOpenAICompat({ systemPrompt, messages, stream, onDelta });
+        if (p === 'ollama') return this.callOllama({ systemPrompt, messages, stream, onDelta });
+        throw new Error('Unbekannter Provider');
+      },
+
+      async callAnthropic({ systemPrompt, messages, stream, onDelta }) {
+        const ctrl = new AbortController();
+        this.currentAbort = ctrl;
+        const res = await fetch('https://api.anthropic.com/v1/messages', {
+          method: 'POST',
+          headers: {
+            'x-api-key': this.settings.apiKey,
+            'anthropic-version': '2023-06-01',
+            'anthropic-dangerous-direct-browser-access': 'true',
+            'content-type': 'application/json'
+          },
+          body: JSON.stringify({
+            model: this.settings.model || PROVIDERS.anthropic.defaultModel,
+            max_tokens: 2048,
+            system: systemPrompt,
+            messages,
+            stream
+          }),
+          signal: ctrl.signal
+        });
+        if (!res.ok) throw new Error(`Anthropic ${res.status}: ${(await res.text()).slice(0, 200)}`);
+
+        if (!stream) {
+          const data = await res.json();
+          return data.content?.[0]?.text || '';
+        }
+
+        return this.consumeSSE(res, (event) => {
+          if (event.type === 'content_block_delta' && event.delta?.text) onDelta(event.delta.text);
+        });
+      },
+
+      async callOpenAICompat({ systemPrompt, messages, stream, onDelta }) {
+        const ctrl = new AbortController();
+        this.currentAbort = ctrl;
+        const provider = this.settings.provider;
+        const url = PROVIDERS[provider].url;
+        const headers = {
+          'Authorization': `Bearer ${this.settings.apiKey}`,
+          'Content-Type': 'application/json'
+        };
+        if (provider === 'openrouter') {
+          headers['HTTP-Referer'] = 'https://boldclaim.github.io/boldclaim';
+          headers['X-Title'] = 'Boldclaim';
+        }
+        const res = await fetch(url, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify({
+            model: this.settings.model || PROVIDERS[provider].defaultModel,
+            messages: [{ role: 'system', content: systemPrompt }, ...messages],
+            stream,
+            max_tokens: 2048
+          }),
+          signal: ctrl.signal
+        });
+        if (!res.ok) throw new Error(`${provider} ${res.status}: ${(await res.text()).slice(0, 200)}`);
+
+        if (!stream) {
+          const data = await res.json();
+          return data.choices?.[0]?.message?.content || '';
+        }
+
+        return this.consumeSSE(res, (event) => {
+          const delta = event.choices?.[0]?.delta?.content;
+          if (delta) onDelta(delta);
+        });
+      },
+
+      async callOllama({ systemPrompt, messages, stream, onDelta }) {
+        const ctrl = new AbortController();
+        this.currentAbort = ctrl;
+        const url = (this.settings.apiKey?.includes('://') ? this.settings.apiKey : 'http://' + this.settings.apiKey) || 'http://localhost:11434';
+        const res = await fetch(url.replace(/\/+$/, '') + '/api/chat', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model: this.settings.model || PROVIDERS.ollama.defaultModel,
+            messages: [{ role: 'system', content: systemPrompt }, ...messages],
+            stream
+          }),
+          signal: ctrl.signal
+        });
+        if (!res.ok) throw new Error(`Ollama ${res.status}`);
+        if (!stream) {
+          const data = await res.json();
+          return data.message?.content || '';
+        }
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let acc = '';
+        let buffer = '';
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop();
+          for (const line of lines) {
+            if (!line.trim()) continue;
+            try {
+              const obj = JSON.parse(line);
+              const t = obj.message?.content;
+              if (t) { acc += t; onDelta(t); }
+            } catch (e) { /* skip */ }
+          }
+        }
+        return acc;
+      },
+
+      async consumeSSE(res, handler) {
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          const blocks = buffer.split('\n\n');
+          buffer = blocks.pop();
+          for (const block of blocks) {
+            for (const line of block.split('\n')) {
+              if (!line.startsWith('data: ')) continue;
+              const payload = line.slice(6).trim();
+              if (payload === '[DONE]') return;
+              try {
+                handler(JSON.parse(payload));
+              } catch (e) { /* skip */ }
+            }
+          }
+        }
+      },
+
+      // Persistence
+      persistSession() {
+        try {
+          localStorage.setItem('boldclaim_session_v2', JSON.stringify({
+            ts: Date.now(),
+            messages: this.messages.slice(-40)
+          }));
+        } catch (e) { /* quota */ }
+      },
+
+      newChat() {
+        if (this.messages.length === 0) return;
+        this.archiveCurrentChat();
+        this.messages = [];
+        this.input = '';
+        this.pendingImages = [];
+        localStorage.removeItem('boldclaim_session_v2');
+      },
+
+      archiveCurrentChat() {
+        try {
+          const archive = JSON.parse(localStorage.getItem('boldclaim_archive_v2') || '[]');
+          archive.unshift({
+            id: crypto.randomUUID(),
+            ts: Date.now(),
+            title: (this.messages.find(m => m.role === 'user')?.content || 'Conversation').slice(0, 80),
+            messages: this.messages
+          });
+          localStorage.setItem('boldclaim_archive_v2', JSON.stringify(archive.slice(0, 50)));
+        } catch (e) { /* quota */ }
+      },
+
+      exportConversations() {
+        try {
+          const archive = JSON.parse(localStorage.getItem('boldclaim_archive_v2') || '[]');
+          const all = this.messages.length ? [{ ts: Date.now(), title: 'aktuell', messages: this.messages }, ...archive] : archive;
+          const blob = new Blob([JSON.stringify(all, null, 2)], { type: 'application/json' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `boldclaim-export-${new Date().toISOString().slice(0,10)}.json`;
+          a.click();
+          URL.revokeObjectURL(url);
+        } catch (e) { alert('Export fehlgeschlagen: ' + e.message); }
+      },
+
+      clearAll() {
+        if (!confirm('Alle Settings, Conversations und API-Key löschen?')) return;
+        localStorage.removeItem('boldclaim_settings_v2');
+        localStorage.removeItem('boldclaim_session_v2');
+        localStorage.removeItem('boldclaim_archive_v2');
+        this.messages = [];
+        Object.assign(this.settings, { provider: 'anthropic', model: '', apiKey: '', platform: 'Reddit', tone: 'Sachlich', lang: 'de' });
+        this.settings.model = this.defaultModel('anthropic');
+      },
+
+      // Misc
+      copy(text, ev) {
+        navigator.clipboard.writeText(text);
+        const msg = this.messages.find(m => m.content === text);
+        if (msg) {
+          msg.copied = true;
+          setTimeout(() => { msg.copied = false; }, 1500);
+        }
+      },
+
+      scrollDown() {
+        this.$nextTick(() => {
+          const main = document.querySelector('main');
+          if (main) main.scrollTop = main.scrollHeight;
+        });
+      }
+    };
+  }
+</script>
+
+</body>
+</html>
