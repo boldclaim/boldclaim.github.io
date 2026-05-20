@@ -228,13 +228,33 @@
           <span x-text="t('welcome.titleA')"></span>
           <span class="block text-zinc-400 dark:text-zinc-500" x-text="t('welcome.titleB')"></span>
         </h1>
-        <div class="mt-10 flex flex-wrap gap-2">
-          <template x-for="topic in topics" :key="topic.label">
-            <button @click="usePill(topic)"
-                    class="topic-pill text-sm px-3.5 py-1.5 rounded-full bg-white dark:bg-zinc-800/70 hover:bg-zinc-50 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 hover:border-zinc-300 dark:hover:border-zinc-600 shadow-sm">
-              <span x-text="topic.label"></span>
-            </button>
-          </template>
+        <!-- Examples dropdown -->
+        <div class="mt-10 relative">
+          <button @click="showExamples = !showExamples"
+                  class="inline-flex items-center gap-2 text-sm px-4 py-2 rounded-full bg-white dark:bg-zinc-800/70 hover:bg-zinc-50 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 hover:border-zinc-300 dark:hover:border-zinc-600 shadow-sm">
+            <span x-text="t('examples.button')"></span>
+            <svg class="w-4 h-4 transition-transform" :class="showExamples && 'rotate-180'" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+
+          <div x-show="showExamples"
+               x-transition.opacity.duration.150ms
+               @click.outside="showExamples = false"
+               class="mt-3 bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl shadow-lg max-h-[60vh] overflow-y-auto p-2">
+            <p class="px-3 pt-2 pb-3 text-xs text-zinc-500 dark:text-zinc-500" x-text="t('examples.hint')"></p>
+            <template x-for="group in examples" :key="group.cat">
+              <div class="mb-2 last:mb-0">
+                <h3 class="px-3 pt-2 pb-1 text-[11px] uppercase tracking-wider font-semibold text-zinc-500 dark:text-zinc-500" x-text="group.cat"></h3>
+                <template x-for="point in group.points" :key="point">
+                  <button @click="useExample(point)"
+                          class="block w-full text-left text-sm px-3 py-2 rounded-md text-zinc-800 dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800 leading-snug">
+                    <span x-text="'„' + point + '“'"></span>
+                  </button>
+                </template>
+              </div>
+            </template>
+          </div>
         </div>
         <div class="mt-12 flex flex-wrap gap-x-3 gap-y-1 text-xs text-zinc-500 dark:text-zinc-500">
           <button @click="settingsOpen=true; settingsTab='onboarding'" class="underline hover:text-zinc-700 dark:hover:text-zinc-300" x-text="t('welcome.setup')"></button>
@@ -732,26 +752,120 @@
     }
   };
 
-  const TOPICS = {
+  const EXAMPLES = {
     de: [
-      { label: 'Migration', sample: 'Mein Onkel sagt: "Bürgergeld nur für Migranten, Deutsche kriegen nichts mehr." Wie konter ich das?' },
-      { label: 'AfD', sample: 'Ein Kollege meint die AfD sei "die einzige normale Partei". Was sind die besten Gegenpunkte?' },
-      { label: 'Energie', sample: 'Schreib mir einen sachlichen Konter zu: "Die Energiewende hat uns die teuersten Strompreise Europas beschert."' },
-      { label: 'Bürgergeld', sample: 'Reddit-Comment: "Wer arbeiten geht ist der Dumme, Bürgergeld lohnt sich mehr." Konter?' },
-      { label: 'Klima', sample: 'Konter zu: "Deutschland macht 2% vom CO2 weltweit, was bringts?"' },
-      { label: 'Eliten', sample: '"Politiker bereichern sich, das System ist korrupt." — was sage ich dem?' },
-      { label: 'EU', sample: '"Die EU diktiert uns alles, raus da." Konter sachlich.' },
-      { label: 'Gender', sample: 'Konter zu: "Gendern zerstört die deutsche Sprache."' }
+      { cat: 'Migration', points: [
+        'Asylbewerber bekommen mehr Geld als deutsche Rentner.',
+        '4,5 Prozent vom Bundeshaushalt gehen für Bürgergeld an Ausländer.',
+        'Die meisten Migranten sind junge Männer im wehrfähigen Alter.',
+        'Gruppenvergewaltigungen werden überwiegend von Nichtdeutschen begangen.',
+        'Wir können nicht mehr aufnehmen, das System bricht zusammen.'
+      ] },
+      { cat: 'Heizung & Energie', points: [
+        'Habecks 65-Prozent-Regel war Wärmepumpen-Pflicht für alle.',
+        'Die Förderung wird einfach stumpf auf die Preise aufgeschlagen.',
+        'Mein Haus eignet sich nicht für eine Wärmepumpe, das ist Sonderfall.',
+        'Eine Wärmepumpe kostet 100.000 Euro und amortisiert sich nie.',
+        'Der Spanien-Blackout beweist dass Erneuerbare nicht funktionieren.',
+        'Der Atomausstieg war der größte Fehler der Energiewende.'
+      ] },
+      { cat: 'Bürgergeld & Arbeit', points: [
+        'Wer arbeiten geht ist der Dumme, Bürgergeld lohnt sich mehr.',
+        'Totalverweigerer kassieren 600 Euro im Monat fürs Nichtstun.',
+        'Bürgergeld ist die größte Position im Bundeshaushalt.',
+        'Der Achtstundentag muss weg, das ist nicht mehr zeitgemäß.'
+      ] },
+      { cat: 'AfD & Brandmauer', points: [
+        'Die AfD ist die einzige Partei, die noch das Volk vertritt.',
+        'Die Brandmauer ist undemokratisch, AfD-Wähler werden ausgeschlossen.',
+        'Die Politik treibt die Wähler zur AfD, das ist gewollt.',
+        'Höcke wurde nur missverstanden, das war kein Nazi-Vokabular.'
+      ] },
+      { cat: 'Russland & Ukraine', points: [
+        'Ohne NATO-Osterweiterung gäbe es keinen Krieg.',
+        'Sanktionen treffen nur uns selbst, Russland profitiert.',
+        'Selenskyj ist ein korrupter Kokainist.',
+        'Putin musste so handeln zum Schutz Russlands.',
+        'Die Ukraine ist auch keine Demokratie, alles geschönt.'
+      ] },
+      { cat: 'Klima', points: [
+        'Deutschland macht 2 Prozent vom weltweiten CO2, was bringt das?',
+        'CO2 ist Pflanzennahrung, kein Problem.',
+        'Klimawandel hat es immer gegeben, ist natürlich.',
+        'Klimaschutz ist Mittelschichts-Hobby auf Kosten der Armen.'
+      ] },
+      { cat: 'Eliten & Verschwörung', points: [
+        'Schwab und das WEF wollen die Bevölkerung kontrollieren.',
+        'Soros finanziert die Lügenpresse und NGOs.',
+        'Bill Gates plant uns durch Impfungen zu reduzieren.',
+        'Politiker bereichern sich, das System ist durchkorrupt.'
+      ] },
+      { cat: 'EU', points: [
+        'Die EU diktiert uns alles, raus da.',
+        'Brüssel ist undemokratisch, keiner hat das gewählt.',
+        'Wir zahlen für andere Länder, ohne was dafür zu kriegen.'
+      ] },
+      { cat: 'Gender & Familie', points: [
+        'Es gibt nur zwei Geschlechter, alles andere ist Ideologie.',
+        'Gendern zerstört die deutsche Sprache.',
+        'Frühsexualisierung wird Kindern aufgezwungen.'
+      ] },
+      { cat: 'Corona & Wissenschaft', points: [
+        'Das RKI hat Lockdown und Maßnahmen gefälscht.',
+        'Die Impfungen waren gefährlicher als Corona selbst.',
+        'Die Übersterblichkeit kam von der Impfung, nicht vom Virus.'
+      ] }
     ],
     en: [
-      { label: 'Migration', sample: 'My uncle says: "Welfare only for migrants, Germans get nothing." How do I counter that?' },
-      { label: 'Far-right', sample: 'A colleague says the AfD is "the only normal party". What are the best counter-points?' },
-      { label: 'Energy', sample: 'Give me a factual counter to: "The energy transition has given Germany the highest power prices in Europe."' },
-      { label: 'Welfare', sample: 'Reddit comment: "Working is for suckers, welfare pays better." Counter?' },
-      { label: 'Climate', sample: 'Counter to: "Germany is 2% of global CO2, what difference does it make?"' },
-      { label: 'Elites', sample: '"Politicians enrich themselves, the system is corrupt." — what do I say?' },
-      { label: 'EU', sample: '"The EU dictates everything, get out." Factual counter.' },
-      { label: 'Gender', sample: 'Counter to: "Gender-inclusive language is destroying English."' }
+      { cat: 'Migration', points: [
+        'Asylum seekers get more money than German pensioners.',
+        'Most migrants are young military-age men.',
+        'We cannot take in any more, the system is collapsing.',
+        'Group sex offences are mostly committed by non-Germans.'
+      ] },
+      { cat: 'Heating & Energy', points: [
+        'The 65 percent renewable rule was a heat-pump mandate for everyone.',
+        'Subsidies just get added to the price by manufacturers.',
+        'My house is not suitable for a heat pump, that is a special case.',
+        'The Spanish blackout proves renewables do not work.',
+        'Phasing out nuclear was the biggest energy mistake.'
+      ] },
+      { cat: 'Welfare & Work', points: [
+        'Working is for suckers, welfare pays better.',
+        'Total refusers get 600 euros a month for doing nothing.',
+        'The eight-hour day is outdated and has to go.'
+      ] },
+      { cat: 'Far-right & Firewall', points: [
+        'The AfD is the only party that still represents the people.',
+        'The firewall against the AfD is undemocratic.',
+        'Politicians push voters to the far right, it is intentional.'
+      ] },
+      { cat: 'Russia & Ukraine', points: [
+        'Without NATO eastward expansion there would be no war.',
+        'Sanctions only hurt us, Russia profits.',
+        'Zelensky is a corrupt coke-addict.',
+        'Putin had to act to protect Russia.'
+      ] },
+      { cat: 'Climate', points: [
+        'Germany is 2 percent of global CO2, what is the point?',
+        'CO2 is plant food, not a problem.',
+        'Climate has always changed, it is natural.'
+      ] },
+      { cat: 'Elites & Conspiracy', points: [
+        'Schwab and the WEF want to control the population.',
+        'Soros funds the mainstream press and NGOs.',
+        'Politicians enrich themselves, the system is corrupt through and through.'
+      ] },
+      { cat: 'EU', points: [
+        'The EU dictates everything, we should leave.',
+        'Brussels is undemocratic, nobody elected this.',
+        'We pay for other countries and get nothing back.'
+      ] },
+      { cat: 'Gender & Family', points: [
+        'There are only two sexes, anything else is ideology.',
+        'Gender-inclusive language is destroying English.',
+        'Children are being sexualised too early through gender politics.'
+      ] }
     ]
   };
 
@@ -767,6 +881,8 @@
       'right.welcomeHint': 'Hier zeigt sich der Aufbau jeder Boldclaim-Antwort. Sections kommen aus Markdown-Headern (## ...).',
       'banner.needKey': 'Du brauchst einen API-Key. Setup in 60 Sekunden.', 'banner.setup': 'Einrichten',
       'welcome.titleA': 'Gegen Desinformation.', 'welcome.titleB': 'Mit Quellen.',
+      'examples.button': 'Typische Behauptungen',
+      'examples.hint': 'Klick eine Behauptung an, sie landet im Eingabefeld. Dann Konter generieren.',
       'welcome.setup': 'Setup-Anleitung', 'welcome.privacy': 'Privacy', 'welcome.code': 'Code',
       'comp.for': 'Für', 'comp.tone': 'im Ton', 'comp.placeholder': 'Comment einfügen, Bild droppen oder Thema beschreiben...',
       'comp.busy': 'Boldclaim antwortet...', 'comp.attach': 'Bild anhängen',
@@ -814,6 +930,8 @@
       'right.welcomeHint': 'Shows the structure of every Boldclaim reply. Sections come from Markdown headers (## ...).',
       'banner.needKey': 'You need an API key. Setup in 60 seconds.', 'banner.setup': 'Set up',
       'welcome.titleA': 'Against disinformation.', 'welcome.titleB': 'With sources.',
+      'examples.button': 'Typical claims',
+      'examples.hint': 'Click a claim, it drops into the input. Then generate a counter.',
       'welcome.setup': 'Setup guide', 'welcome.privacy': 'Privacy', 'welcome.code': 'Code',
       'comp.for': 'For', 'comp.tone': 'in tone', 'comp.placeholder': 'Paste a comment, drop an image, or describe a topic...',
       'comp.busy': 'Boldclaim is replying...', 'comp.attach': 'Attach image',
@@ -863,6 +981,7 @@
       dragOver: false,
       lightboxImg: null,
       settingsOpen: false,
+      showExamples: false,
       settingsTab: 'general',
       sidebarOpen: window.innerWidth >= 1024,
       showKey: false,
@@ -945,8 +1064,8 @@
         return 'text-zinc-500';
       },
 
-      // i18n + topics
-      get topics() { return TOPICS[this.settings.lang] || TOPICS.de; },
+      // i18n + examples
+      get examples() { return EXAMPLES[this.settings.lang] || EXAMPLES.de; },
       t(key) {
         const dict = I18N[this.settings.lang] || I18N.de;
         return dict[key] || I18N.de[key] || key;
@@ -1000,8 +1119,9 @@
       },
 
       // Compose
-      usePill(t) {
-        this.input = t.sample;
+      useExample(text) {
+        this.input = text;
+        this.showExamples = false;
         this.$nextTick(() => {
           const ta = document.querySelector('textarea');
           if (ta) ta.focus();
