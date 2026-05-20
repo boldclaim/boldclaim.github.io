@@ -224,9 +224,11 @@
 
       <!-- Welcome state -->
       <div x-show="messages.length === 0" class="hero-bg max-w-2xl mx-auto px-6 pt-16 sm:pt-24 pb-8">
-        <h1 class="text-3xl sm:text-5xl font-semibold tracking-tight" x-text="t('welcome.title')"></h1>
-        <p class="mt-4 text-zinc-600 dark:text-zinc-400 text-lg max-w-xl" x-text="t('welcome.sub')"></p>
-        <div class="mt-8 flex flex-wrap gap-2">
+        <h1 class="text-4xl sm:text-5xl font-bold tracking-tight leading-[1.1]">
+          <span x-text="t('welcome.titleA')"></span>
+          <span class="block text-zinc-400 dark:text-zinc-500" x-text="t('welcome.titleB')"></span>
+        </h1>
+        <div class="mt-10 flex flex-wrap gap-2">
           <template x-for="topic in topics" :key="topic.label">
             <button @click="usePill(topic)"
                     class="topic-pill text-sm px-3.5 py-1.5 rounded-full bg-white dark:bg-zinc-800/70 hover:bg-zinc-50 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-200 border border-zinc-200 dark:border-zinc-700 hover:border-zinc-300 dark:hover:border-zinc-600 shadow-sm">
@@ -764,8 +766,7 @@
       'right.noSections': 'Aktuelle Antwort hat keine Section-Struktur. Probier den Ton "Taktik entblößen" oder "Gungho".',
       'right.welcomeHint': 'Hier zeigt sich der Aufbau jeder Boldclaim-Antwort. Sections kommen aus Markdown-Headern (## ...).',
       'banner.needKey': 'Du brauchst einen API-Key. Setup in 60 Sekunden.', 'banner.setup': 'Einrichten',
-      'welcome.title': 'Paste, drop, counter.',
-      'welcome.sub': 'Reddit-Comment einfügen, Screenshot droppen, oder Thema beschreiben. Boldclaim antwortet sachlich, mit Quellen, in deinem Ton.',
+      'welcome.titleA': 'Gegen Desinformation.', 'welcome.titleB': 'Mit Quellen.',
       'welcome.setup': 'Setup-Anleitung', 'welcome.privacy': 'Privacy', 'welcome.code': 'Code',
       'comp.for': 'Für', 'comp.tone': 'im Ton', 'comp.placeholder': 'Comment einfügen, Bild droppen oder Thema beschreiben...',
       'comp.busy': 'Boldclaim antwortet...', 'comp.attach': 'Bild anhängen',
@@ -812,8 +813,7 @@
       'right.noSections': 'Current reply has no section structure. Try the tone "Expose tactic" or "Gung-ho".',
       'right.welcomeHint': 'Shows the structure of every Boldclaim reply. Sections come from Markdown headers (## ...).',
       'banner.needKey': 'You need an API key. Setup in 60 seconds.', 'banner.setup': 'Set up',
-      'welcome.title': 'Paste, drop, counter.',
-      'welcome.sub': 'Paste a comment, drop a screenshot, or describe a topic. Boldclaim answers factually, with sources, in your tone.',
+      'welcome.titleA': 'Against disinformation.', 'welcome.titleB': 'With sources.',
       'welcome.setup': 'Setup guide', 'welcome.privacy': 'Privacy', 'welcome.code': 'Code',
       'comp.for': 'For', 'comp.tone': 'in tone', 'comp.placeholder': 'Paste a comment, drop an image, or describe a topic...',
       'comp.busy': 'Boldclaim is replying...', 'comp.attach': 'Attach image',
