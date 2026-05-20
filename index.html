@@ -178,7 +178,7 @@
     <header class="flex items-center justify-between px-4 sm:px-6 h-12 border-b border-zinc-200 dark:border-zinc-800 shrink-0 bg-white/70 dark:bg-zinc-950/70 backdrop-blur">
       <div class="flex items-center gap-2">
         <button @click="sidebarOpen=!sidebarOpen"
-                title="Verlauf"
+                :title="t('header.history') + ' (⌘B / Ctrl+B)'"
                 class="p-2 -ml-2 rounded-md text-zinc-500 hover:text-zinc-900 dark:hover:text-zinc-100 hover:bg-zinc-100 dark:hover:bg-zinc-800 transition">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
         </button>
@@ -1005,7 +1005,7 @@
       settingsOpen: false,
       topicsVisible: false,
       settingsTab: 'general',
-      sidebarOpen: window.innerWidth >= 1024,
+      sidebarOpen: localStorage.getItem('boldclaim_sidebar_open') === 'true',
       showKey: false,
       testing: false,
       testStatus: '',
@@ -1047,6 +1047,19 @@
         }
         window.addEventListener('resize', () => {
           if (window.innerWidth < 1024 && this.sidebarOpen) this.sidebarOpen = false;
+        });
+        // persist sidebar preference
+        this.$watch('sidebarOpen', v => {
+          localStorage.setItem('boldclaim_sidebar_open', v ? 'true' : 'false');
+        });
+        // keyboard shortcut: Cmd/Ctrl + B toggles sidebar
+        window.addEventListener('keydown', (e) => {
+          if ((e.metaKey || e.ctrlKey) && (e.key === 'b' || e.key === 'B')) {
+            const tag = document.activeElement?.tagName;
+            if (tag === 'INPUT' || tag === 'TEXTAREA') return;
+            e.preventDefault();
+            this.sidebarOpen = !this.sidebarOpen;
+          }
         });
       },
 
