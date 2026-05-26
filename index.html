@@ -395,6 +395,7 @@
             <option value="De-eskalierend" x-text="t('tone.deescalate')"></option>
             <option value="Fact-Check pur" x-text="t('tone.factcheck')"></option>
             <option value="Taktik entblößen" x-text="t('tone.expose')"></option>
+            <option value="Widerspruchsfalle" x-text="t('tone.contradiction')"></option>
           </select>
         </div>
 
@@ -601,6 +602,7 @@
                 <option value="De-eskalierend" x-text="t('tone.deescalate')"></option>
                 <option value="Fact-Check pur" x-text="t('tone.factcheck')"></option>
                 <option value="Taktik entblößen" x-text="t('tone.expose')"></option>
+                <option value="Widerspruchsfalle" x-text="t('tone.contradiction')"></option>
               </select>
             </div>
           </div>
@@ -911,7 +913,7 @@
       'comp.noKey': 'Kein API-Key, Settings öffnen',
       'platform.reddit': 'Reddit', 'platform.twitter': 'X/Twitter', 'platform.spoken': 'Mündlich', 'platform.whatsapp': 'WhatsApp',
       'tone.factual': 'Sachlich', 'tone.snarky': 'Hämisch', 'tone.gungho': 'Gungho',
-      'tone.deescalate': 'De-eskalierend', 'tone.factcheck': 'Fact-Check pur', 'tone.expose': 'Taktik entblößen',
+      'tone.deescalate': 'De-eskalierend', 'tone.factcheck': 'Fact-Check pur', 'tone.expose': 'Taktik entblößen', 'tone.contradiction': 'Widerspruchsfalle',
       'msg.copyReddit': 'Reddit (Markdown)', 'msg.copyPlain': 'Plain Text',
       'msg.copiedReddit': '✓ Reddit', 'msg.copiedPlain': '✓ Plain',
       'msg.sources': 'Quellen', 'msg.analysisTitle': 'Analyse des Gegner-Kommentars',
@@ -960,7 +962,7 @@
       'comp.noKey': 'No API key, open Settings',
       'platform.reddit': 'Reddit', 'platform.twitter': 'X/Twitter', 'platform.spoken': 'Spoken', 'platform.whatsapp': 'WhatsApp',
       'tone.factual': 'Factual', 'tone.snarky': 'Snarky', 'tone.gungho': 'Gung-ho',
-      'tone.deescalate': 'De-escalating', 'tone.factcheck': 'Fact-check only', 'tone.expose': 'Expose tactic',
+      'tone.deescalate': 'De-escalating', 'tone.factcheck': 'Fact-check only', 'tone.expose': 'Expose tactic', 'tone.contradiction': 'Contradiction trap',
       'msg.copyReddit': 'Reddit (markdown)', 'msg.copyPlain': 'Plain text',
       'msg.copiedReddit': '✓ Reddit', 'msg.copiedPlain': '✓ Plain',
       'msg.sources': 'Sources', 'msg.analysisTitle': "Analysis of the opponent's comment",
@@ -1381,6 +1383,20 @@ Maximum 150 Wörter. Mitleser-First-Frame. Maximum 3 Tactics.`
 Possible tactics: Quote-Mining, Cherry-Picking, Strawman, Whataboutism, Goalpost-shifting, "Bullshit"-stamping, Three-level-conflation, Discipline-wash, Peer-review-trump, Atlas-Network-talking-points, Mainstream-dismissal, Self-contradiction, Side-step, Selective-memory, Procedure-conflation.
 
 Max 150 words. Reader-first frame. Max 3 tactics.`;
+        } else if (tone === 'Widerspruchsfalle') {
+          toneInstruction = isDE
+            ? `Sokratische Dekonstruktion. Nicht Fakten-first. Finde im Kommentar ZWEI Positionen (oder eine Aussage plus eine Forderung), die sich gegenseitig kassieren, und leg sie offen, sodass der Gegner es selbst merkt.
+
+Aufbau: 1) Scheininteresse-Opener, trocken ("ah interessant" / "verstehe ich dich richtig"), nicht überzogen-sarkastisch. 2) Seine zwei Positionen wortnah nebeneinander. 3) Die Zange als AUSSAGE, nicht als Bittfrage ("eins von beidem musst du aufgeben"). 4) Genau EINE harte Zahl als Nachschlag, inline eingewebt, keine Quellen-Liste.
+
+Regeln: nur EIN Widerspruch (nicht stapeln). Seine Worte, nicht deine Interpretation. Kein Dauer-Nachbohren (kein Sealioning). Wenn KEIN echter Selbstwiderspruch im Kommentar steckt, sag das und schlag einen normalen Konter vor, erfinde keinen Widerspruch. KEINE generischen Section-Header, eine flüssige Antwort. Max 120 Wörter.
+
+Beispiel-Muster: "ah interessant, du findest 0% wachstum zu wenig und willst gleichzeitig ein viertel der erwerbstätigen abschieben (30% der bevölkerung haben migrationshintergrund). eins von beidem geht nur."`
+            : `Socratic deconstruction. Not facts-first. Find TWO positions in the comment (or one claim plus a demand) that cancel each other out, and expose them so the opponent sees it himself.
+
+Structure: 1) Feigned-interest opener, dry ("ah, interesting" / "let me get this right"), not over-the-top sarcastic. 2) His two positions side by side, close to his wording. 3) The pincer as a STATEMENT, not a pleading question ("you have to give up one of the two"). 4) Exactly ONE hard number as a follow-up, woven in, no source list.
+
+Rules: only ONE contradiction (don't stack). His words, not your paraphrase. No endless probing (no sealioning). If there is NO real self-contradiction in the comment, say so and propose a normal counter instead, don't invent one. NO generic section headers, one flowing reply. Max 120 words.`;
         } else {
           toneInstruction = isDE
             ? `Ton: ${tone}. Sachlich faktenfest. Section-Header optional als kurze Reddit-artige Aussagen.`
