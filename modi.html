@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Die Konter-Modi von Boldclaim. Welcher Stil wann. Sachlich, hämisch, gungho, de-eskalierend und mehr.">
+  <meta name="description" content="Die Konter-Modi von Boldclaim. Zwei Achsen, nicht sieben Modi. Kategorie mal Härtegrad.">
   <meta name="theme-color" content="#fafaf9" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#09090b" media="(prefers-color-scheme: dark)">
   <title>Die Modi · Boldclaim</title>
@@ -74,6 +74,29 @@
     .panel-block {
       min-height: 2rem;
     }
+
+    /* Härtegrad scale */
+    .scale-track {
+      position: relative;
+      height: 3px;
+      background: linear-gradient(to right, #d4d4d8, #71717a, #18181b);
+      border-radius: 2px;
+    }
+    .dark .scale-track {
+      background: linear-gradient(to right, #3f3f46, #a1a1aa, #f4f4f5);
+    }
+    .scale-pip {
+      position: absolute;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      border: 2px solid white;
+    }
+    .dark .scale-pip {
+      border-color: #09090b;
+    }
   </style>
   <script>
     (function() {
@@ -126,365 +149,129 @@
     <p class="text-[11px] font-mono uppercase tracking-widest text-zinc-400 dark:text-zinc-600 mb-4">Boldclaim</p>
     <h1 class="text-4xl sm:text-5xl font-bold tracking-tight leading-[1.1]">
       Die Modi
-      <span class="block text-zinc-400 dark:text-zinc-500 mt-1">Welcher Konter wann.</span>
+      <span class="block text-zinc-400 dark:text-zinc-500 mt-1">Zwei Achsen, nicht sieben Modi.</span>
     </h1>
     <p class="mt-5 text-base text-zinc-600 dark:text-zinc-400 max-w-lg leading-relaxed">
-      Stil ist Strategie, nicht Geschmack. Welcher Modus passt, hängt vom Gegner, dem Publikum und der Beziehung ab, nicht vom eigenen Impuls.
+      Ein guter Konter trifft zwei Entscheidungen: WAS du angreifst und WIE HART. Aus drei Kategorien und drei Härtegraden entsteht jeder Konter, statt aus einer Liste überlappender Modi.
     </p>
   </section>
 
-  <!-- Decision matrix placeholder -->
-  <section class="mb-14">
-    <div class="border border-zinc-200 dark:border-zinc-800 rounded-xl p-5 bg-white dark:bg-zinc-900">
-      <p class="text-[10px] font-mono uppercase tracking-widest text-zinc-400 dark:text-zinc-600 mb-2">Entscheidungsmatrix</p>
-      <p class="text-sm text-zinc-600 dark:text-zinc-400 mb-3 leading-relaxed">Zwei Allrounder, vier Spezialwerkzeuge. Das Paradox aus dem Panel: die stärkste Wirkung haben oft die Modi, die Kontrolle abgeben (Fact-Check, Widerspruchsfalle), nicht die lautesten.</p>
-        <div class="overflow-x-auto">
-          <table class="w-full text-sm border-collapse">
-            <thead><tr class="text-left text-[10px] font-mono uppercase tracking-wider text-zinc-400 dark:text-zinc-600">
-              <th class="py-1.5 pr-4 font-semibold">Situation / Gegnertyp</th><th class="py-1.5 font-semibold">Modus</th></tr></thead>
-            <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800">
-              <tr><td class="py-2 pr-4 text-zinc-700 dark:text-zinc-300">Echter Zweifler oder Gläubiger</td><td class="py-2 font-medium">De-eskalierend</td></tr>
-              <tr><td class="py-2 pr-4 text-zinc-700 dark:text-zinc-300">Familienmitglied, Bekannter</td><td class="py-2 font-medium">De-eskalierend</td></tr>
-              <tr><td class="py-2 pr-4 text-zinc-700 dark:text-zinc-300">Brigader, koordinierter Angriff</td><td class="py-2 font-medium">Gungho</td></tr>
-              <tr><td class="py-2 pr-4 text-zinc-700 dark:text-zinc-300">Hohe Reichweite, viraler Thread</td><td class="py-2 font-medium">Gungho</td></tr>
-              <tr><td class="py-2 pr-4 text-zinc-700 dark:text-zinc-300">Statistik-affiner Gegner</td><td class="py-2 font-medium">Sachlich oder Fact-Check pur</td></tr>
-              <tr><td class="py-2 pr-4 text-zinc-700 dark:text-zinc-300">Gish-Gallop, klare Fallacies</td><td class="py-2 font-medium">Taktik entblößen</td></tr>
-              <tr><td class="py-2 pr-4 text-zinc-700 dark:text-zinc-300">Troll</td><td class="py-2 font-medium">Taktik entblößen oder kein Konter</td></tr>
-              <tr><td class="py-2 pr-4 text-zinc-700 dark:text-zinc-300">Figur mit dokumentierter Positionshistorie</td><td class="py-2 font-medium">Widerspruchsfalle</td></tr>
-              <tr><td class="py-2 pr-4 text-zinc-700 dark:text-zinc-300">Toter Thread, Archivwert</td><td class="py-2 font-medium">Fact-Check pur</td></tr>
-              <tr><td class="py-2 pr-4 text-zinc-700 dark:text-zinc-300">Belegte Heuchelei, breites Publikum</td><td class="py-2 font-medium">Hämisch (mit Vorsicht)</td></tr>
-            </tbody>
-          </table>
-        </div>
-        <p class="mt-3 text-[11px] font-mono text-zinc-400 dark:text-zinc-600">Allrounder: Taktik entblößen + Sachlich. Spezialwerkzeuge: Widerspruchsfalle, De-eskalierend, Gungho, Hämisch.</p>
+  <!-- Achse 1: Kategorie -->
+  <section class="mb-16">
+    <div class="mb-6">
+      <p class="text-[10px] font-mono uppercase tracking-widest text-zinc-400 dark:text-zinc-600 mb-1">Achse 1</p>
+      <h2 class="text-xl font-semibold tracking-tight">Kategorie <span class="text-zinc-400 dark:text-zinc-500 font-normal">(was du angreifst)</span></h2>
     </div>
-  </section>
 
-  <!-- Mode cards -->
-  <section class="space-y-6">
+    <div class="space-y-6">
 
-    <!-- 1. Sachlich -->
-    <article class="mode-card pl-5 border border-zinc-200 dark:border-zinc-800 rounded-xl bg-white dark:bg-zinc-900 overflow-hidden">
-      <div class="p-5 sm:p-6">
-        <div class="flex items-start justify-between gap-4 mb-4">
-          <div>
-            <div class="flex items-center gap-2.5 mb-1">
-              <span class="mode-number text-[11px] font-mono text-zinc-400 dark:text-zinc-600 tabular-nums">01</span>
-              <h2 class="text-lg font-semibold tracking-tight">Sachlich</h2>
+      <!-- 01 Fakten -->
+      <article class="mode-card pl-5 border border-zinc-200 dark:border-zinc-800 rounded-xl bg-white dark:bg-zinc-900 overflow-hidden">
+        <div class="p-5 sm:p-6">
+          <div class="flex items-start justify-between gap-4 mb-4">
+            <div>
+              <div class="flex items-center gap-2.5 mb-1">
+                <span class="mode-number text-[11px] font-mono text-zinc-400 dark:text-zinc-600 tabular-nums">01</span>
+                <h3 class="text-lg font-semibold tracking-tight">Fakten</h3>
+              </div>
+              <p class="text-sm text-zinc-600 dark:text-zinc-400 leading-snug">Die Behauptung selbst mit Quellen widerlegen.</p>
             </div>
-            <p class="text-sm text-zinc-600 dark:text-zinc-400 leading-snug">Faktenbasiert überzeugen, mit Quellen und Nuance, für die stillen Mitleser.</p>
+            <span class="shrink-0 text-[11px] font-mono px-2 py-0.5 rounded-full border border-zinc-200 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400 whitespace-nowrap">fakten</span>
           </div>
-          <span class="shrink-0 text-[11px] font-mono px-2 py-0.5 rounded-full border border-zinc-200 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400 whitespace-nowrap">sachlich</span>
-        </div>
 
-        <div class="grid sm:grid-cols-2 gap-4 mb-5">
-          <div>
-            <p class="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-600 mb-2">Wann verwenden</p>
-            <ul class="space-y-1.5">
-              <li class="flex gap-2 text-sm text-zinc-700 dark:text-zinc-300">
-                <svg class="shrink-0 mt-0.5" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                Unentschlossene Leser im Publikum
-              </li>
-              <li class="flex gap-2 text-sm text-zinc-700 dark:text-zinc-300">
-                <svg class="shrink-0 mt-0.5" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                Faktenlastige Behauptung, die sich direkt widerlegen laesst
-              </li>
-              <li class="flex gap-2 text-sm text-zinc-700 dark:text-zinc-300">
-                <svg class="shrink-0 mt-0.5" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                Du hast belastbare Quellen zur Hand
-              </li>
-            </ul>
-          </div>
-          <div>
-            <p class="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-600 mb-2">Nicht verwenden wenn</p>
-            <ul class="space-y-1.5">
-              <li class="flex gap-2 text-sm text-zinc-700 dark:text-zinc-300">
-                <svg class="shrink-0 mt-0.5" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                Reiner Troll ohne jeden Faktenbezug
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="mb-5">
-          <p class="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-600 mb-2">Beispiel</p>
-          <pre class="text-[13px] leading-relaxed bg-stone-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg p-4 whitespace-pre-wrap overflow-x-auto text-zinc-800 dark:text-zinc-200">"esoterik" is keine gegenstudie. im april 2024 hat der bundestag sachverständige angehört, zu einem CDU/CSU-antrag die leistungen für asylbewerber zu senken. ausgerechnet da sagte die mehrheit, inkl. migrationsrechtler thym (konstanz, kein linker): die höhe der sozialleistungen is kein relevanter faktor. wer das widerlegen will, braucht ne studie, kein label.</pre>
-        </div>
-
-        <div class="panel-block border border-dashed border-zinc-200 dark:border-zinc-800 rounded-lg p-4 bg-zinc-50/50 dark:bg-zinc-950/50">
-          <p class="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-600 mb-1">Panel-Urteil</p>
-          <div class="flex flex-wrap gap-x-4 gap-y-1 mb-2 text-[11px] font-mono text-zinc-500 dark:text-zinc-400"><span class="tabular-nums">Mitleser <b class="text-zinc-900 dark:text-zinc-100">4/5</b></span><span class="tabular-nums">Gegner-Resistenz <b class="text-zinc-900 dark:text-zinc-100">3/5</b></span><span class="tabular-nums">Backfire <b class="text-zinc-900 dark:text-zinc-100">2/5</b></span></div><p class="text-[13px] text-zinc-600 dark:text-zinc-400 leading-snug">Das Rückgrat: seriös und glaubwürdig, bewegt aber selten aktiv. Der Gegner schneidet Konzessionen als „selbst die geben zu...“ heraus. <span class="text-zinc-500">Best: statistik-affiner Gegner, neutrale Leser. Worst: Troll, Gish-Gallop, Familienchat.</span></p>
-        </div>
-      </div>
-    </article>
-
-    <!-- 2. Hämisch -->
-    <article class="mode-card pl-5 border border-zinc-200 dark:border-zinc-800 rounded-xl bg-white dark:bg-zinc-900 overflow-hidden">
-      <div class="p-5 sm:p-6">
-        <div class="flex items-start justify-between gap-4 mb-4">
-          <div>
-            <div class="flex items-center gap-2.5 mb-1">
-              <span class="mode-number text-[11px] font-mono text-zinc-400 dark:text-zinc-600 tabular-nums">02</span>
-              <h2 class="text-lg font-semibold tracking-tight">Hämisch</h2>
+          <div class="grid sm:grid-cols-2 gap-4 mb-5">
+            <div>
+              <p class="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-600 mb-2">Wann verwenden</p>
+              <ul class="space-y-1.5">
+                <li class="flex gap-2 text-sm text-zinc-700 dark:text-zinc-300">
+                  <svg class="shrink-0 mt-0.5" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                  Faktenlastige Behauptung; du hast belastbare Quellen
+                </li>
+                <li class="flex gap-2 text-sm text-zinc-700 dark:text-zinc-300">
+                  <svg class="shrink-0 mt-0.5" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                  Neutrale Mitleser im Publikum
+                </li>
+                <li class="flex gap-2 text-sm text-zinc-700 dark:text-zinc-300">
+                  <svg class="shrink-0 mt-0.5" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                  Bei MEHREREN Behauptungen: Punktetafel (Wahr / Teilweise / Irreführend / Falsch plus Quelle)
+                </li>
+              </ul>
             </div>
-            <p class="text-sm text-zinc-600 dark:text-zinc-400 leading-snug">Sachlich plus ein bis zwei scharfe Sticheleien, nie billig.</p>
-          </div>
-          <span class="shrink-0 text-[11px] font-mono px-2 py-0.5 rounded-full border border-zinc-200 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400 whitespace-nowrap">hämisch</span>
-        </div>
-
-        <div class="grid sm:grid-cols-2 gap-4 mb-5">
-          <div>
-            <p class="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-600 mb-2">Wann verwenden</p>
-            <ul class="space-y-1.5">
-              <li class="flex gap-2 text-sm text-zinc-700 dark:text-zinc-300">
-                <svg class="shrink-0 mt-0.5" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                Bad-faith-Gegner, der Fakten ignoriert
-              </li>
-              <li class="flex gap-2 text-sm text-zinc-700 dark:text-zinc-300">
-                <svg class="shrink-0 mt-0.5" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                Du willst trotzdem Substanz liefern, nicht nur Konter
-              </li>
-              <li class="flex gap-2 text-sm text-zinc-700 dark:text-zinc-300">
-                <svg class="shrink-0 mt-0.5" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                Mitleser brauchen Unterhaltung und Argument zugleich
-              </li>
-            </ul>
-          </div>
-          <div>
-            <p class="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-600 mb-2">Nicht verwenden wenn</p>
-            <ul class="space-y-1.5">
-              <li class="flex gap-2 text-sm text-zinc-700 dark:text-zinc-300">
-                <svg class="shrink-0 mt-0.5" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                Jemand der dir wichtig ist oder sensible Themen wie Trauer
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="mb-5">
-          <p class="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-600 mb-2">Beispiel</p>
-          <pre class="text-[13px] leading-relaxed bg-stone-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg p-4 whitespace-pre-wrap overflow-x-auto text-zinc-800 dark:text-zinc-200">ein café um die ecke ersetzt keine statistik. beweislast liegt bei dem der verschärfen will. dein kommentar ist übrigens ne goldgrube an fallacies: ad hominem, anekdotische evidenz, beweislastumkehr. fünf fehler in zwei sätzen. nicht schlecht.</pre>
-        </div>
-
-        <div class="panel-block border border-dashed border-zinc-200 dark:border-zinc-800 rounded-lg p-4 bg-zinc-50/50 dark:bg-zinc-950/50">
-          <p class="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-600 mb-1">Panel-Urteil</p>
-          <div class="flex flex-wrap gap-x-4 gap-y-1 mb-2 text-[11px] font-mono text-zinc-500 dark:text-zinc-400"><span class="tabular-nums">Mitleser <b class="text-zinc-900 dark:text-zinc-100">2/5</b></span><span class="tabular-nums">Gegner-Resistenz <b class="text-zinc-900 dark:text-zinc-100">1/5</b></span><span class="tabular-nums">Backfire <b class="text-zinc-900 dark:text-zinc-100">4/5</b></span></div><p class="text-[13px] text-zinc-600 dark:text-zinc-400 leading-snug">Die gefährlichste Waffe, alle drei Lenses warnen. Der Gegner liebt sie: ein sarkastischer Satz wird zur Telegram-Vorlage „so redet die Elite“. <span class="text-zinc-500">Best: belegte Heuchelei vor breitem Publikum. Worst: fast immer. Reservewaffe.</span></p>
-        </div>
-      </div>
-    </article>
-
-    <!-- 3. Gungho -->
-    <article class="mode-card pl-5 border border-zinc-200 dark:border-zinc-800 rounded-xl bg-white dark:bg-zinc-900 overflow-hidden">
-      <div class="p-5 sm:p-6">
-        <div class="flex items-start justify-between gap-4 mb-4">
-          <div>
-            <div class="flex items-center gap-2.5 mb-1">
-              <span class="mode-number text-[11px] font-mono text-zinc-400 dark:text-zinc-600 tabular-nums">03</span>
-              <h2 class="text-lg font-semibold tracking-tight">Gungho</h2>
+            <div>
+              <p class="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-600 mb-2">Nicht verwenden wenn</p>
+              <ul class="space-y-1.5">
+                <li class="flex gap-2 text-sm text-zinc-700 dark:text-zinc-300">
+                  <svg class="shrink-0 mt-0.5" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                  Reiner Troll ohne Faktenbezug
+                </li>
+              </ul>
             </div>
-            <p class="text-sm text-zinc-600 dark:text-zinc-400 leading-snug">Vernichtend, keine Konzessionen, nur Aktenlage gegen die Lüge, schwache Punkte weglassen.</p>
           </div>
-          <span class="shrink-0 text-[11px] font-mono px-2 py-0.5 rounded-full border border-zinc-200 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400 whitespace-nowrap">gungho</span>
-        </div>
 
-        <div class="grid sm:grid-cols-2 gap-4 mb-5">
-          <div>
-            <p class="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-600 mb-2">Wann verwenden</p>
-            <ul class="space-y-1.5">
-              <li class="flex gap-2 text-sm text-zinc-700 dark:text-zinc-300">
-                <svg class="shrink-0 mt-0.5" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                Brigader oder dreiste Lüge mit hoher Reichweite
-              </li>
-              <li class="flex gap-2 text-sm text-zinc-700 dark:text-zinc-300">
-                <svg class="shrink-0 mt-0.5" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                Du willst für die Mitleser sichtbar dominieren
-              </li>
-              <li class="flex gap-2 text-sm text-zinc-700 dark:text-zinc-300">
-                <svg class="shrink-0 mt-0.5" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                Der Gegner argumentiert nicht in gutem Glauben
-              </li>
-            </ul>
+          <div class="mb-5">
+            <p class="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-600 mb-2">Beispiel</p>
+            <pre class="text-[13px] leading-relaxed bg-stone-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg p-4 whitespace-pre-wrap overflow-x-auto text-zinc-800 dark:text-zinc-200">"esoterik" is keine gegenstudie. im april 2024 hat der bundestag sachverständige angehört, zu einem CDU/CSU-antrag die leistungen für asylbewerber zu senken. ausgerechnet da sagte die mehrheit, inkl. migrationsrechtler thym (konstanz, kein linker): die höhe der sozialleistungen is kein relevanter faktor. wer das widerlegen will, braucht ne studie, kein label.</pre>
           </div>
-          <div>
-            <p class="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-600 mb-2">Nicht verwenden wenn</p>
-            <ul class="space-y-1.5">
-              <li class="flex gap-2 text-sm text-zinc-700 dark:text-zinc-300">
-                <svg class="shrink-0 mt-0.5" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                Echter Zweifler den du gewinnen willst oder Beziehung steht auf dem Spiel
-              </li>
-            </ul>
-          </div>
-        </div>
 
-        <div class="mb-5">
-          <p class="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-600 mb-2">Beispiel</p>
-          <pre class="text-[13px] leading-relaxed bg-stone-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg p-4 whitespace-pre-wrap overflow-x-auto text-zinc-800 dark:text-zinc-200">grenzkontrollen wie polen geht nicht: polens zaun steht an der EU-außengrenze, deutschlands nachbarn sind alle schengen. straftäter abschieben geht längst, paragraph 53. und die syrer, die du abschieben willst: 5.745 ärzte in deutschen kliniken, 320.000 beschäftigte. du beschreibst gerade, wie du dein eigenes krankenhaus leer räumst.</pre>
-        </div>
-
-        <div class="panel-block border border-dashed border-zinc-200 dark:border-zinc-800 rounded-lg p-4 bg-zinc-50/50 dark:bg-zinc-950/50">
-          <p class="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-600 mb-1">Panel-Urteil</p>
-          <div class="flex flex-wrap gap-x-4 gap-y-1 mb-2 text-[11px] font-mono text-zinc-500 dark:text-zinc-400"><span class="tabular-nums">Mitleser <b class="text-zinc-900 dark:text-zinc-100">2/5</b></span><span class="tabular-nums">Gegner-Resistenz <b class="text-zinc-900 dark:text-zinc-100">5/5</b></span><span class="tabular-nums">Backfire <b class="text-zinc-900 dark:text-zinc-100">3/5</b></span></div><p class="text-[13px] text-zinc-600 dark:text-zinc-400 leading-snug">Der einzige Modus, vor dem der Gegner echte Angst hat: nichts zu screenshotten, kein Ton für den Opfer-Modus, nummerierte Fakten erzwingen Punkt-für-Punkt-Antwort. Überzeugt aber keine Zweifler, er dominiert für Mitleser. <span class="text-zinc-500">Best: Brigader, dreiste Lüge, hohe Reichweite. Worst: echter Zweifler, Beziehung.</span></p>
-        </div>
-      </div>
-    </article>
-
-    <!-- 4. De-eskalierend -->
-    <article class="mode-card pl-5 border border-zinc-200 dark:border-zinc-800 rounded-xl bg-white dark:bg-zinc-900 overflow-hidden">
-      <div class="p-5 sm:p-6">
-        <div class="flex items-start justify-between gap-4 mb-4">
-          <div>
-            <div class="flex items-center gap-2.5 mb-1">
-              <span class="mode-number text-[11px] font-mono text-zinc-400 dark:text-zinc-600 tabular-nums">04</span>
-              <h2 class="text-lg font-semibold tracking-tight">De-eskalierend</h2>
+          <div class="panel-block border border-dashed border-zinc-200 dark:border-zinc-800 rounded-lg p-4 bg-zinc-50/50 dark:bg-zinc-950/50">
+            <p class="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-600 mb-1">Panel-Urteil</p>
+            <div class="flex flex-wrap gap-x-4 gap-y-1 mb-2 text-[11px] font-mono text-zinc-500 dark:text-zinc-400">
+              <span class="tabular-nums">Mitleser <b class="text-zinc-900 dark:text-zinc-100">4/5</b></span>
+              <span class="tabular-nums text-zinc-400 dark:text-zinc-600">(als Punktetafel <b class="text-zinc-700 dark:text-zinc-300">5/5</b>)</span>
+              <span class="tabular-nums">Gegner-Resistenz <b class="text-zinc-900 dark:text-zinc-100">3/5</b></span>
+              <span class="tabular-nums">Backfire <b class="text-zinc-900 dark:text-zinc-100">1/5</b></span>
             </div>
-            <p class="text-sm text-zinc-600 dark:text-zinc-400 leading-snug">Nicht gewinnen, sondern beruhigen. Emotion validieren, sanft zu Fakten, Off-Ramp anbieten, Beziehung schützen.</p>
-          </div>
-          <span class="shrink-0 text-[11px] font-mono px-2 py-0.5 rounded-full border border-zinc-200 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400 whitespace-nowrap">deeskalierend</span>
-        </div>
-
-        <div class="grid sm:grid-cols-2 gap-4 mb-5">
-          <div>
-            <p class="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-600 mb-2">Wann verwenden</p>
-            <ul class="space-y-1.5">
-              <li class="flex gap-2 text-sm text-zinc-700 dark:text-zinc-300">
-                <svg class="shrink-0 mt-0.5" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                Familie, Freunde, Kollegen
-              </li>
-              <li class="flex gap-2 text-sm text-zinc-700 dark:text-zinc-300">
-                <svg class="shrink-0 mt-0.5" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                Jemand mit dem du eine reale Beziehung hast
-              </li>
-              <li class="flex gap-2 text-sm text-zinc-700 dark:text-zinc-300">
-                <svg class="shrink-0 mt-0.5" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                Die Beziehung ist wichtiger als der Punkt
-              </li>
-            </ul>
-          </div>
-          <div>
-            <p class="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-600 mb-2">Nicht verwenden wenn</p>
-            <ul class="space-y-1.5">
-              <li class="flex gap-2 text-sm text-zinc-700 dark:text-zinc-300">
-                <svg class="shrink-0 mt-0.5" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                Anonymer Brigader in einer öffentlichen Mitleser-Schlacht
-              </li>
-            </ul>
+            <p class="text-[13px] text-zinc-600 dark:text-zinc-400 leading-snug">Das Rückgrat. Seriös und teilbar; als Punktetafel der Mitleser-Favorit mit dem niedrigsten Backfire. Der Gegner kann nur die Quellen-Autorität angreifen.</p>
           </div>
         </div>
+      </article>
 
-        <div class="mb-5">
-          <p class="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-600 mb-2">Beispiel</p>
-          <pre class="text-[13px] leading-relaxed bg-stone-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg p-4 whitespace-pre-wrap overflow-x-auto text-zinc-800 dark:text-zinc-200">ich versteh die sorge, das thema macht vielen angst. nur die zahl die grad rumgeht stimmt so nicht, die kommt aus nem zurückgezogenen entwurf, nicht aus geltendem recht. wenn du magst schick ich dir den faktencheck und wir schauen das in ruhe zusammen an.</pre>
-        </div>
-
-        <div class="panel-block border border-dashed border-zinc-200 dark:border-zinc-800 rounded-lg p-4 bg-zinc-50/50 dark:bg-zinc-950/50">
-          <p class="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-600 mb-1">Panel-Urteil</p>
-          <div class="flex flex-wrap gap-x-4 gap-y-1 mb-2 text-[11px] font-mono text-zinc-500 dark:text-zinc-400"><span class="tabular-nums">Mitleser <b class="text-zinc-900 dark:text-zinc-100">4/5</b></span><span class="tabular-nums">Gegner-Resistenz <b class="text-zinc-900 dark:text-zinc-100">2/5</b></span><span class="tabular-nums">Backfire <b class="text-zinc-900 dark:text-zinc-100">2/5</b></span></div><p class="text-[13px] text-zinc-600 dark:text-zinc-400 leading-snug">Wärme und Erdung, aber nur eins zu eins. Im öffentlichen Thread als Einknicken gelesen, der Gegner framt es als Herablassung oder Bot. <span class="text-zinc-500">Best: Familie, Freunde, Vier-Augen. Worst: anonymer Brigader, Publikums-Schlacht.</span></p>
-        </div>
-      </div>
-    </article>
-
-    <!-- 5. Fact-Check pur -->
-    <article class="mode-card pl-5 border border-zinc-200 dark:border-zinc-800 rounded-xl bg-white dark:bg-zinc-900 overflow-hidden">
-      <div class="p-5 sm:p-6">
-        <div class="flex items-start justify-between gap-4 mb-4">
-          <div>
-            <div class="flex items-center gap-2.5 mb-1">
-              <span class="mode-number text-[11px] font-mono text-zinc-400 dark:text-zinc-600 tabular-nums">05</span>
-              <h2 class="text-lg font-semibold tracking-tight">Fact-Check pur</h2>
+      <!-- 02 Rhetorik -->
+      <article class="mode-card pl-5 border border-zinc-200 dark:border-zinc-800 rounded-xl bg-white dark:bg-zinc-900 overflow-hidden">
+        <div class="p-5 sm:p-6">
+          <div class="flex items-start justify-between gap-4 mb-4">
+            <div>
+              <div class="flex items-center gap-2.5 mb-1">
+                <span class="mode-number text-[11px] font-mono text-zinc-400 dark:text-zinc-600 tabular-nums">02</span>
+                <h3 class="text-lg font-semibold tracking-tight">Rhetorik</h3>
+              </div>
+              <p class="text-sm text-zinc-600 dark:text-zinc-400 leading-snug">Die manipulative Taktik des Gegners beim Namen nennen, damit der Mitleser den Trick sieht.</p>
             </div>
-            <p class="text-sm text-zinc-600 dark:text-zinc-400 leading-snug">Pro Behauptung ein klares Urteil plus Quelle, keine Rhetorik.</p>
+            <span class="shrink-0 text-[11px] font-mono px-2 py-0.5 rounded-full border border-zinc-200 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400 whitespace-nowrap">rhetorik</span>
           </div>
-          <span class="shrink-0 text-[11px] font-mono px-2 py-0.5 rounded-full border border-zinc-200 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400 whitespace-nowrap">factcheck</span>
-        </div>
 
-        <div class="grid sm:grid-cols-2 gap-4 mb-5">
-          <div>
-            <p class="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-600 mb-2">Wann verwenden</p>
-            <ul class="space-y-1.5">
-              <li class="flex gap-2 text-sm text-zinc-700 dark:text-zinc-300">
-                <svg class="shrink-0 mt-0.5" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                Mehrere diskrete Faktenbehauptungen auf einmal
-              </li>
-              <li class="flex gap-2 text-sm text-zinc-700 dark:text-zinc-300">
-                <svg class="shrink-0 mt-0.5" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                Du willst eine saubere, referenzierbare Punktetafel
-              </li>
-              <li class="flex gap-2 text-sm text-zinc-700 dark:text-zinc-300">
-                <svg class="shrink-0 mt-0.5" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                Quellen sind leicht zugaenglich und eindeutig
-              </li>
-            </ul>
-          </div>
-          <div>
-            <p class="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-600 mb-2">Nicht verwenden wenn</p>
-            <ul class="space-y-1.5">
-              <li class="flex gap-2 text-sm text-zinc-700 dark:text-zinc-300">
-                <svg class="shrink-0 mt-0.5" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                Emotionale Einzelbehauptung ohne harte verifierbare Fakten
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="mb-5">
-          <p class="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-600 mb-2">Beispiel</p>
-          <pre class="text-[13px] leading-relaxed bg-stone-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg p-4 whitespace-pre-wrap overflow-x-auto text-zinc-800 dark:text-zinc-200">"Berlin baut Sexräume für Kita-Kinder" zu Falsch. "Erfahrungsräume" war metaphorisch, "Sexräume" stand nirgends (Correctiv).
-"Der Plan gilt" zu Falsch. Entwurf, nie autorisiert, Ende Feb 2024 zurückgezogen.</pre>
-        </div>
-
-        <div class="panel-block border border-dashed border-zinc-200 dark:border-zinc-800 rounded-lg p-4 bg-zinc-50/50 dark:bg-zinc-950/50">
-          <p class="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-600 mb-1">Panel-Urteil</p>
-          <div class="flex flex-wrap gap-x-4 gap-y-1 mb-2 text-[11px] font-mono text-zinc-500 dark:text-zinc-400"><span class="tabular-nums">Mitleser <b class="text-zinc-900 dark:text-zinc-100">5/5</b></span><span class="tabular-nums">Gegner-Resistenz <b class="text-zinc-900 dark:text-zinc-100">3/5</b></span><span class="tabular-nums">Backfire <b class="text-zinc-900 dark:text-zinc-100">1/5</b></span></div><p class="text-[13px] text-zinc-600 dark:text-zinc-400 leading-snug">Mitleser-Sieger: Klarheit ohne Theater, neutral teilbar, niedrigstes Backfire-Risiko. Der Gegner kann nur die Quellen-Autorität angreifen. <span class="text-zinc-500">Best: mehrere Behauptungen, Screenshot-Referenz. Worst: schnelle Live-Debatte, emotionale Erstreaktion.</span></p>
-        </div>
-      </div>
-    </article>
-
-    <!-- 6. Taktik entblößen -->
-    <article class="mode-card pl-5 border border-zinc-200 dark:border-zinc-800 rounded-xl bg-white dark:bg-zinc-900 overflow-hidden">
-      <div class="p-5 sm:p-6">
-        <div class="flex items-start justify-between gap-4 mb-4">
-          <div>
-            <div class="flex items-center gap-2.5 mb-1">
-              <span class="mode-number text-[11px] font-mono text-zinc-400 dark:text-zinc-600 tabular-nums">06</span>
-              <h2 class="text-lg font-semibold tracking-tight">Taktik entblößen</h2>
+          <div class="grid sm:grid-cols-2 gap-4 mb-5">
+            <div>
+              <p class="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-600 mb-2">Wann verwenden</p>
+              <ul class="space-y-1.5">
+                <li class="flex gap-2 text-sm text-zinc-700 dark:text-zinc-300">
+                  <svg class="shrink-0 mt-0.5" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                  Gegner nutzt Fallacies (Quote-Mining, Strohmann, Whataboutism, Gish-Gallop)
+                </li>
+                <li class="flex gap-2 text-sm text-zinc-700 dark:text-zinc-300">
+                  <svg class="shrink-0 mt-0.5" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                  Mitleser-Pädagogik; Publikum soll den Trick lernen
+                </li>
+                <li class="flex gap-2 text-sm text-zinc-700 dark:text-zinc-300">
+                  <svg class="shrink-0 mt-0.5" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                  Die Taktik ist eindeutig und belegbar
+                </li>
+              </ul>
             </div>
-            <p class="text-sm text-zinc-600 dark:text-zinc-400 leading-snug">Die rhetorische Taktik des Gegners beim Namen nennen, damit der Mitleser den Trick sieht.</p>
+            <div>
+              <p class="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-600 mb-2">Nicht verwenden wenn</p>
+              <ul class="space-y-1.5">
+                <li class="flex gap-2 text-sm text-zinc-700 dark:text-zinc-300">
+                  <svg class="shrink-0 mt-0.5" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                  Der Gegner argumentiert sachlich und in gutem Glauben
+                </li>
+              </ul>
+            </div>
           </div>
-          <span class="shrink-0 text-[11px] font-mono px-2 py-0.5 rounded-full border border-zinc-200 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400 whitespace-nowrap">entlarven</span>
-        </div>
 
-        <div class="grid sm:grid-cols-2 gap-4 mb-5">
-          <div>
-            <p class="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-600 mb-2">Wann verwenden</p>
-            <ul class="space-y-1.5">
-              <li class="flex gap-2 text-sm text-zinc-700 dark:text-zinc-300">
-                <svg class="shrink-0 mt-0.5" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                Gegner nutzt Fallacies (Quote-Mining, Strohmann, Whataboutism)
-              </li>
-              <li class="flex gap-2 text-sm text-zinc-700 dark:text-zinc-300">
-                <svg class="shrink-0 mt-0.5" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                Mitleser-Pädagogik: Publikum soll den Trick lernen
-              </li>
-              <li class="flex gap-2 text-sm text-zinc-700 dark:text-zinc-300">
-                <svg class="shrink-0 mt-0.5" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                Die Taktik ist eindeutig und belegbar
-              </li>
-            </ul>
-          </div>
-          <div>
-            <p class="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-600 mb-2">Nicht verwenden wenn</p>
-            <ul class="space-y-1.5">
-              <li class="flex gap-2 text-sm text-zinc-700 dark:text-zinc-300">
-                <svg class="shrink-0 mt-0.5" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                Der Gegner argumentiert sachlich und in gutem Glauben
-              </li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="mb-5">
-          <p class="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-600 mb-2">Beispiel</p>
-          <pre class="text-[13px] leading-relaxed bg-stone-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg p-4 whitespace-pre-wrap overflow-x-auto text-zinc-800 dark:text-zinc-200">## Anekdotische Evidenz
+          <div class="mb-5">
+            <p class="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-600 mb-2">Beispiel</p>
+            <pre class="text-[13px] leading-relaxed bg-stone-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg p-4 whitespace-pre-wrap overflow-x-auto text-zinc-800 dark:text-zinc-200">## Anekdotische Evidenz
 ein café nebenan ist n=1.
 
 ## Beweislastumkehr
@@ -492,71 +279,197 @@ wer ein gesetz verschärfen will, muss den bedarf belegen.
 
 ## Falsches Dilemma
 dritte option: erst zahlen, dann debatte.</pre>
-        </div>
+          </div>
 
-        <div class="panel-block border border-dashed border-zinc-200 dark:border-zinc-800 rounded-lg p-4 bg-zinc-50/50 dark:bg-zinc-950/50">
-          <p class="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-600 mb-1">Panel-Urteil</p>
-          <div class="flex flex-wrap gap-x-4 gap-y-1 mb-2 text-[11px] font-mono text-zinc-500 dark:text-zinc-400"><span class="tabular-nums">Mitleser <b class="text-zinc-900 dark:text-zinc-100">4/5</b></span><span class="tabular-nums">Gegner-Resistenz <b class="text-zinc-900 dark:text-zinc-100">4/5</b></span><span class="tabular-nums">Backfire <b class="text-zinc-900 dark:text-zinc-100">2/5</b></span></div><p class="text-[13px] text-zinc-600 dark:text-zinc-400 leading-snug">Allrounder: lehrt Muster statt Einzelfakt (Pre-Bunking) und adressiert den Mitleser, nicht den Gegner. Risiko nur bei falscher Taktik-Benennung (wirkt arrogant). <span class="text-zinc-500">Best: Gish-Gallop, klare Fallacies. Worst: echte Meinungsverschiedenheit.</span></p>
-        </div>
-      </div>
-    </article>
-
-    <!-- 7. Widerspruchsfalle -->
-    <article class="mode-card pl-5 border border-zinc-200 dark:border-zinc-800 rounded-xl bg-white dark:bg-zinc-900 overflow-hidden">
-      <div class="p-5 sm:p-6">
-        <div class="flex items-start justify-between gap-4 mb-4">
-          <div>
-            <div class="flex items-center gap-2.5 mb-1">
-              <span class="mode-number text-[11px] font-mono text-zinc-400 dark:text-zinc-600 tabular-nums">07</span>
-              <h2 class="text-lg font-semibold tracking-tight">Widerspruchsfalle</h2>
+          <div class="panel-block border border-dashed border-zinc-200 dark:border-zinc-800 rounded-lg p-4 bg-zinc-50/50 dark:bg-zinc-950/50">
+            <p class="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-600 mb-1">Panel-Urteil</p>
+            <div class="flex flex-wrap gap-x-4 gap-y-1 mb-2 text-[11px] font-mono text-zinc-500 dark:text-zinc-400">
+              <span class="tabular-nums">Mitleser <b class="text-zinc-900 dark:text-zinc-100">4/5</b></span>
+              <span class="tabular-nums">Gegner-Resistenz <b class="text-zinc-900 dark:text-zinc-100">4/5</b></span>
+              <span class="tabular-nums">Backfire <b class="text-zinc-900 dark:text-zinc-100">2/5</b></span>
             </div>
-            <p class="text-sm text-zinc-600 dark:text-zinc-400 leading-snug">Zwei Positionen des Gegners gegeneinander stellen, sodass er den Selbstwiderspruch selbst sieht.</p>
-          </div>
-          <span class="shrink-0 text-[11px] font-mono px-2 py-0.5 rounded-full border border-zinc-200 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400 whitespace-nowrap">widerspruch</span>
-        </div>
-
-        <div class="grid sm:grid-cols-2 gap-4 mb-5">
-          <div>
-            <p class="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-600 mb-2">Wann verwenden</p>
-            <ul class="space-y-1.5">
-              <li class="flex gap-2 text-sm text-zinc-700 dark:text-zinc-300">
-                <svg class="shrink-0 mt-0.5" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                Gegner haelt zwei sich kassierende Positionen
-              </li>
-              <li class="flex gap-2 text-sm text-zinc-700 dark:text-zinc-300">
-                <svg class="shrink-0 mt-0.5" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                Statistik-resistenter Gegner, der Zahlen wegwischt
-              </li>
-              <li class="flex gap-2 text-sm text-zinc-700 dark:text-zinc-300">
-                <svg class="shrink-0 mt-0.5" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                Der Widerspruch ist echte Eigenaussage, keine Interpretation
-              </li>
-            </ul>
-          </div>
-          <div>
-            <p class="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-600 mb-2">Nicht verwenden wenn</p>
-            <ul class="space-y-1.5">
-              <li class="flex gap-2 text-sm text-zinc-700 dark:text-zinc-300">
-                <svg class="shrink-0 mt-0.5" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-                Kein echter Selbstwiderspruch da ist, nie einen erfinden
-              </li>
-            </ul>
+            <p class="text-[13px] text-zinc-600 dark:text-zinc-400 leading-snug">Allrounder. Lehrt Muster statt Einzelfakt (Pre-Bunking) und adressiert den Mitleser, nicht den Gegner. Risiko nur bei falscher Taktik-Benennung.</p>
           </div>
         </div>
+      </article>
 
-        <div class="mb-5">
-          <p class="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-600 mb-2">Beispiel</p>
-          <pre class="text-[13px] leading-relaxed bg-stone-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg p-4 whitespace-pre-wrap overflow-x-auto text-zinc-800 dark:text-zinc-200">ah interessant. zwei jahre rezession findest du zu wenig, und deine lösung is, einem viertel der erwerbstätigen den stuhl vor die tür zu stellen. du beklagst die stagnation und willst der wirtschaft gleichzeitig die leute wegnehmen, die sie tragen. eins von beidem geht nur.</pre>
+      <!-- 03 Logik -->
+      <article class="mode-card pl-5 border border-zinc-200 dark:border-zinc-800 rounded-xl bg-white dark:bg-zinc-900 overflow-hidden">
+        <div class="p-5 sm:p-6">
+          <div class="flex items-start justify-between gap-4 mb-4">
+            <div>
+              <div class="flex items-center gap-2.5 mb-1">
+                <span class="mode-number text-[11px] font-mono text-zinc-400 dark:text-zinc-600 tabular-nums">03</span>
+                <h3 class="text-lg font-semibold tracking-tight">Logik</h3>
+              </div>
+              <p class="text-sm text-zinc-600 dark:text-zinc-400 leading-snug">Zwei seiner eigenen Aussagen gegeneinander stellen, sodass er den Selbstwiderspruch selbst sieht (Widerspruchsfalle).</p>
+            </div>
+            <span class="shrink-0 text-[11px] font-mono px-2 py-0.5 rounded-full border border-zinc-200 dark:border-zinc-700 text-zinc-500 dark:text-zinc-400 whitespace-nowrap">logik</span>
+          </div>
+
+          <div class="grid sm:grid-cols-2 gap-4 mb-5">
+            <div>
+              <p class="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-600 mb-2">Wann verwenden</p>
+              <ul class="space-y-1.5">
+                <li class="flex gap-2 text-sm text-zinc-700 dark:text-zinc-300">
+                  <svg class="shrink-0 mt-0.5" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                  Gegner hält zwei sich kassierende Positionen
+                </li>
+                <li class="flex gap-2 text-sm text-zinc-700 dark:text-zinc-300">
+                  <svg class="shrink-0 mt-0.5" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                  Statistik-resistenter Gegner; der Widerspruch ist echte Eigenaussage
+                </li>
+              </ul>
+            </div>
+            <div>
+              <p class="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-600 mb-2">Nicht verwenden wenn</p>
+              <ul class="space-y-1.5">
+                <li class="flex gap-2 text-sm text-zinc-700 dark:text-zinc-300">
+                  <svg class="shrink-0 mt-0.5" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                  Kein echter Selbstwiderspruch da ist, nie einen erfinden
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="mb-5">
+            <p class="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-600 mb-2">Beispiel</p>
+            <pre class="text-[13px] leading-relaxed bg-stone-50 dark:bg-zinc-950 border border-zinc-200 dark:border-zinc-800 rounded-lg p-4 whitespace-pre-wrap overflow-x-auto text-zinc-800 dark:text-zinc-200">ah interessant. zwei jahre rezession findest du zu wenig, und deine lösung is, einem viertel der erwerbstätigen den stuhl vor die tür zu stellen. du beklagst die stagnation und willst der wirtschaft gleichzeitig die leute wegnehmen, die sie tragen. eins von beidem geht nur.</pre>
+          </div>
+
+          <div class="panel-block border border-dashed border-zinc-200 dark:border-zinc-800 rounded-lg p-4 bg-zinc-50/50 dark:bg-zinc-950/50">
+            <p class="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-600 mb-1">Panel-Urteil</p>
+            <div class="flex flex-wrap gap-x-4 gap-y-1 mb-2 text-[11px] font-mono text-zinc-500 dark:text-zinc-400">
+              <span class="tabular-nums">Mitleser <b class="text-zinc-900 dark:text-zinc-100">4/5</b></span>
+              <span class="tabular-nums">Gegner-Resistenz <b class="text-zinc-900 dark:text-zinc-100">4/5</b></span>
+              <span class="tabular-nums">Backfire <b class="text-zinc-900 dark:text-zinc-100">3/5</b></span>
+            </div>
+            <p class="text-[13px] text-zinc-600 dark:text-zinc-400 leading-snug">Elegant, der Leser zieht den Schluss selbst. Der Gegner kann nur ignorieren oder deflektieren. Braucht einen echten Widerspruch, sonst wirkt es konstruiert.</p>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- Achse 2: Härtegrad -->
+  <section class="mb-16">
+    <div class="mb-6">
+      <p class="text-[10px] font-mono uppercase tracking-widest text-zinc-400 dark:text-zinc-600 mb-1">Achse 2</p>
+      <h2 class="text-xl font-semibold tracking-tight">Härtegrad <span class="text-zinc-400 dark:text-zinc-500 font-normal">(wie hart)</span></h2>
+    </div>
+
+    <!-- Scale visual -->
+    <div class="border border-zinc-200 dark:border-zinc-800 rounded-xl bg-white dark:bg-zinc-900 p-5 sm:p-6 mb-6">
+      <div class="flex justify-between text-[11px] font-mono text-zinc-400 dark:text-zinc-600 mb-3 uppercase tracking-wider">
+        <span>Ruhig</span>
+        <span>Direkt</span>
+        <span>Gungho</span>
+      </div>
+      <div class="scale-track mb-3">
+        <div class="scale-pip bg-zinc-300 dark:bg-zinc-600" style="left: 0%;"></div>
+        <div class="scale-pip bg-zinc-500 dark:bg-zinc-400" style="left: 50%;"></div>
+        <div class="scale-pip bg-zinc-800 dark:bg-zinc-200" style="left: 100%;"></div>
+      </div>
+
+      <div class="grid sm:grid-cols-3 gap-4 mt-5">
+
+        <!-- Ruhig -->
+        <div class="border-l-2 border-zinc-200 dark:border-zinc-700 pl-3">
+          <p class="text-[10px] font-mono uppercase tracking-wider text-zinc-400 dark:text-zinc-600 mb-1.5">Ruhig</p>
+          <p class="text-sm text-zinc-600 dark:text-zinc-400 leading-snug">Sanfter Ton, Emotion validieren, Konzessionen erlaubt, Off-Ramp, Beziehung schützen. Nur eins zu eins (Familie, Freunde). Im öffentlichen Thread wird es als Einknicken gelesen.</p>
         </div>
 
-        <div class="panel-block border border-dashed border-zinc-200 dark:border-zinc-800 rounded-lg p-4 bg-zinc-50/50 dark:bg-zinc-950/50">
-          <p class="text-[10px] font-semibold uppercase tracking-wider text-zinc-400 dark:text-zinc-600 mb-1">Panel-Urteil</p>
-          <div class="flex flex-wrap gap-x-4 gap-y-1 mb-2 text-[11px] font-mono text-zinc-500 dark:text-zinc-400"><span class="tabular-nums">Mitleser <b class="text-zinc-900 dark:text-zinc-100">4/5</b></span><span class="tabular-nums">Gegner-Resistenz <b class="text-zinc-900 dark:text-zinc-100">4/5</b></span><span class="tabular-nums">Backfire <b class="text-zinc-900 dark:text-zinc-100">3/5</b></span></div><p class="text-[13px] text-zinc-600 dark:text-zinc-400 leading-snug">Elegant: der Leser zieht den Schluss selbst, kein Lärm. Der Gegner kann nur ignorieren oder deflektieren. Braucht einen echten Widerspruch, sonst wirkt es konstruiert. <span class="text-zinc-500">Best: dokumentierte Positionshistorie, statistik-resistenter Gegner. Worst: kein echter Widerspruch.</span></p>
+        <!-- Direkt -->
+        <div class="border-l-2 border-zinc-400 dark:border-zinc-500 pl-3">
+          <p class="text-[10px] font-mono uppercase tracking-wider text-zinc-400 dark:text-zinc-600 mb-1.5">Direkt</p>
+          <p class="text-sm text-zinc-600 dark:text-zinc-400 leading-snug">Sachlich, klar, keine unnötigen Konzessionen, kein Angriff. Der Standard.</p>
+        </div>
+
+        <!-- Gungho -->
+        <div class="border-l-2 border-zinc-800 dark:border-zinc-200 pl-3">
+          <p class="text-[10px] font-mono uppercase tracking-wider text-zinc-400 dark:text-zinc-600 mb-1.5">Gungho</p>
+          <p class="text-sm text-zinc-600 dark:text-zinc-400 leading-snug">Vernichtend, keine Konzessionen, nur Aktenlage, schwache eigene Punkte weglassen, scharfer Schluss. KEIN Spott. Der einzige Härtegrad, vor dem der Gegner laut Panel echte Angst hat.</p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Hinweis-Box: Hämisch gestrichen -->
+    <div class="border border-zinc-200 dark:border-zinc-800 rounded-xl bg-zinc-50 dark:bg-zinc-900/50 p-4 sm:p-5">
+      <div class="flex gap-3">
+        <div class="shrink-0 mt-0.5">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-zinc-400 dark:text-zinc-600">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </div>
+        <div>
+          <p class="text-[10px] font-mono uppercase tracking-wider text-zinc-400 dark:text-zinc-600 mb-1">Gestrichen: Hämisch</p>
+          <p class="text-sm text-zinc-600 dark:text-zinc-400 leading-relaxed">Gungho plus Spott liefert dem Gegner sofort Opfer-Modus-Munition ("so redet die Elite"), einhellig die gefährlichste Variante im Panel. Spott ist kein Härtegrad, sondern ein Eigentor.</p>
         </div>
       </div>
-    </article>
-
+    </div>
   </section>
+
+  <!-- Kombinieren -->
+  <section class="mb-14">
+    <div class="mb-6">
+      <p class="text-[10px] font-mono uppercase tracking-widest text-zinc-400 dark:text-zinc-600 mb-1">Achse 1 × Achse 2</p>
+      <h2 class="text-xl font-semibold tracking-tight">Kombinieren</h2>
+    </div>
+
+    <div class="border border-zinc-200 dark:border-zinc-800 rounded-xl bg-white dark:bg-zinc-900 overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm border-collapse">
+          <thead>
+            <tr class="border-b border-zinc-200 dark:border-zinc-800 text-left text-[10px] font-mono uppercase tracking-wider text-zinc-400 dark:text-zinc-600">
+              <th class="py-2.5 px-4 sm:px-5 font-semibold">Situation</th>
+              <th class="py-2.5 px-3 font-semibold">Kategorie</th>
+              <th class="py-2.5 px-3 pr-4 sm:pr-5 font-semibold">Härte</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800">
+            <tr>
+              <td class="py-2.5 px-4 sm:px-5 text-zinc-700 dark:text-zinc-300">Statistik-affiner Gegner</td>
+              <td class="py-2.5 px-3 font-medium text-zinc-900 dark:text-zinc-100">Fakten</td>
+              <td class="py-2.5 px-3 pr-4 sm:pr-5 font-mono text-[12px] text-zinc-500 dark:text-zinc-400">Direkt</td>
+            </tr>
+            <tr>
+              <td class="py-2.5 px-4 sm:px-5 text-zinc-700 dark:text-zinc-300">Mehrere Lügen auf einmal</td>
+              <td class="py-2.5 px-3 font-medium text-zinc-900 dark:text-zinc-100">Fakten (Punktetafel)</td>
+              <td class="py-2.5 px-3 pr-4 sm:pr-5 font-mono text-[12px] text-zinc-500 dark:text-zinc-400">Direkt</td>
+            </tr>
+            <tr>
+              <td class="py-2.5 px-4 sm:px-5 text-zinc-700 dark:text-zinc-300">Gish-Gallop, klare Fallacies</td>
+              <td class="py-2.5 px-3 font-medium text-zinc-900 dark:text-zinc-100">Rhetorik</td>
+              <td class="py-2.5 px-3 pr-4 sm:pr-5 font-mono text-[12px] text-zinc-500 dark:text-zinc-400">Direkt</td>
+            </tr>
+            <tr>
+              <td class="py-2.5 px-4 sm:px-5 text-zinc-700 dark:text-zinc-300">Brigader, dreiste Lüge, hohe Reichweite</td>
+              <td class="py-2.5 px-3 font-medium text-zinc-900 dark:text-zinc-100">beliebig</td>
+              <td class="py-2.5 px-3 pr-4 sm:pr-5 font-mono text-[12px] text-zinc-500 dark:text-zinc-400">Gungho</td>
+            </tr>
+            <tr>
+              <td class="py-2.5 px-4 sm:px-5 text-zinc-700 dark:text-zinc-300">Selbstwiderspruch, statistik-resistent</td>
+              <td class="py-2.5 px-3 font-medium text-zinc-900 dark:text-zinc-100">Logik</td>
+              <td class="py-2.5 px-3 pr-4 sm:pr-5 font-mono text-[12px] text-zinc-500 dark:text-zinc-400">Direkt</td>
+            </tr>
+            <tr>
+              <td class="py-2.5 px-4 sm:px-5 text-zinc-700 dark:text-zinc-300">Familie, Freund, eins zu eins</td>
+              <td class="py-2.5 px-3 font-medium text-zinc-900 dark:text-zinc-100">Fakten</td>
+              <td class="py-2.5 px-3 pr-4 sm:pr-5 font-mono text-[12px] text-zinc-500 dark:text-zinc-400">Ruhig</td>
+            </tr>
+            <tr>
+              <td class="py-2.5 px-4 sm:px-5 text-zinc-700 dark:text-zinc-300">Figur mit Positionshistorie</td>
+              <td class="py-2.5 px-3 font-medium text-zinc-900 dark:text-zinc-100">Logik</td>
+              <td class="py-2.5 px-3 pr-4 sm:pr-5 font-mono text-[12px] text-zinc-500 dark:text-zinc-400">Direkt oder Gungho</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
 </main>
 
 <!-- Footer -->

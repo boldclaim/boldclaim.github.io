@@ -281,7 +281,7 @@
           <button @click="settingsOpen=true; settingsTab='onboarding'" class="underline hover:text-zinc-700 dark:hover:text-zinc-300" x-text="t('welcome.setup')"></button>
           <button @click="settingsOpen=true; settingsTab='privacy'" class="underline hover:text-zinc-700 dark:hover:text-zinc-300" x-text="t('welcome.privacy')"></button>
           <a href="https://github.com/boldclaim/chat" target="_blank" rel="noopener" class="underline hover:text-zinc-700 dark:hover:text-zinc-300" x-text="t('welcome.code')"></a>
-          <a href="./modi.html" class="underline hover:text-zinc-700 dark:hover:text-zinc-300">Modi erklaert</a>
+          <a href="./modi.html" class="underline hover:text-zinc-700 dark:hover:text-zinc-300">Modi erklärt</a>
         </div>
       </div>
 
@@ -387,16 +387,17 @@
             <option value="Mündlich" x-text="t('platform.spoken')"></option>
             <option value="WhatsApp" x-text="t('platform.whatsapp')"></option>
           </select>
-          <span class="text-zinc-400 dark:text-zinc-600" x-text="t('comp.tone')"></span>
-          <select x-model="settings.tone" @change="saveSettings()"
-                  class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-md px-2 py-1 font-medium text-zinc-700 dark:text-zinc-300 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600 cursor-pointer">
-            <option value="Sachlich" x-text="t('tone.factual')"></option>
-            <option value="Hämisch" x-text="t('tone.snarky')"></option>
-            <option value="Gungho" x-text="t('tone.gungho')"></option>
-            <option value="De-eskalierend" x-text="t('tone.deescalate')"></option>
-            <option value="Fact-Check pur" x-text="t('tone.factcheck')"></option>
-            <option value="Taktik entblößen" x-text="t('tone.expose')"></option>
-            <option value="Widerspruchsfalle" x-text="t('tone.contradiction')"></option>
+          <span class="text-zinc-400 dark:text-zinc-600" x-text="t('comp.cat')"></span>
+          <select x-model="settings.category" @change="saveSettings()" class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-md px-2 py-1 font-medium text-zinc-700 dark:text-zinc-300 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600 cursor-pointer">
+            <option value="Fakten" x-text="t('cat.fakten')"></option>
+            <option value="Rhetorik" x-text="t('cat.rhetorik')"></option>
+            <option value="Logik" x-text="t('cat.logik')"></option>
+          </select>
+          <span class="text-zinc-400 dark:text-zinc-600" x-text="t('comp.hard')"></span>
+          <select x-model="settings.hardness" @change="saveSettings()" class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-md px-2 py-1 font-medium text-zinc-700 dark:text-zinc-300 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600 cursor-pointer">
+            <option value="Ruhig" x-text="t('hard.ruhig')"></option>
+            <option value="Direkt" x-text="t('hard.direkt')"></option>
+            <option value="Gungho" x-text="t('hard.gungho')"></option>
           </select>
         </div>
 
@@ -594,16 +595,17 @@
               </select>
             </div>
             <div>
-              <label class="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wide" x-text="t('set.tone')"></label>
-              <select x-model="settings.tone"
-                      class="mt-1.5 w-full bg-stone-50 dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-zinc-500">
-                <option value="Sachlich" x-text="t('tone.factual')"></option>
-                <option value="Hämisch" x-text="t('tone.snarky')"></option>
-                <option value="Gungho" x-text="t('tone.gungho')"></option>
-                <option value="De-eskalierend" x-text="t('tone.deescalate')"></option>
-                <option value="Fact-Check pur" x-text="t('tone.factcheck')"></option>
-                <option value="Taktik entblößen" x-text="t('tone.expose')"></option>
-                <option value="Widerspruchsfalle" x-text="t('tone.contradiction')"></option>
+              <label class="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wide" x-text="t('set.cat')"></label>
+              <select x-model="settings.category" class="mt-1.5 w-full bg-stone-50 dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-zinc-500">
+                <option value="Fakten" x-text="t('cat.fakten')"></option>
+                <option value="Rhetorik" x-text="t('cat.rhetorik')"></option>
+                <option value="Logik" x-text="t('cat.logik')"></option>
+              </select>
+              <label class="mt-3 block text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wide" x-text="t('set.hard')"></label>
+              <select x-model="settings.hardness" class="mt-1.5 w-full bg-stone-50 dark:bg-zinc-950 border border-zinc-300 dark:border-zinc-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-zinc-500">
+                <option value="Ruhig" x-text="t('hard.ruhig')"></option>
+                <option value="Direkt" x-text="t('hard.direkt')"></option>
+                <option value="Gungho" x-text="t('hard.gungho')"></option>
               </select>
             </div>
           </div>
@@ -915,6 +917,9 @@
       'platform.reddit': 'Reddit', 'platform.twitter': 'X/Twitter', 'platform.spoken': 'Mündlich', 'platform.whatsapp': 'WhatsApp',
       'tone.factual': 'Sachlich', 'tone.snarky': 'Hämisch', 'tone.gungho': 'Gungho',
       'tone.deescalate': 'De-eskalierend', 'tone.factcheck': 'Fact-Check pur', 'tone.expose': 'Taktik entblößen', 'tone.contradiction': 'Widerspruchsfalle',
+      'comp.cat': 'Kategorie', 'comp.hard': 'Härte', 'set.cat': 'Kategorie', 'set.hard': 'Härte',
+      'cat.fakten': 'Fakten', 'cat.rhetorik': 'Rhetorik', 'cat.logik': 'Logik',
+      'hard.ruhig': 'Ruhig', 'hard.direkt': 'Direkt', 'hard.gungho': 'Gungho',
       'msg.copyReddit': 'Reddit (Markdown)', 'msg.copyPlain': 'Plain Text',
       'msg.copiedReddit': '✓ Reddit', 'msg.copiedPlain': '✓ Plain',
       'msg.sources': 'Quellen', 'msg.analysisTitle': 'Analyse des Gegner-Kommentars',
@@ -964,6 +969,9 @@
       'platform.reddit': 'Reddit', 'platform.twitter': 'X/Twitter', 'platform.spoken': 'Spoken', 'platform.whatsapp': 'WhatsApp',
       'tone.factual': 'Factual', 'tone.snarky': 'Snarky', 'tone.gungho': 'Gung-ho',
       'tone.deescalate': 'De-escalating', 'tone.factcheck': 'Fact-check only', 'tone.expose': 'Expose tactic', 'tone.contradiction': 'Contradiction trap',
+      'comp.cat': 'Category', 'comp.hard': 'Hardness', 'set.cat': 'Category', 'set.hard': 'Hardness',
+      'cat.fakten': 'Facts', 'cat.rhetorik': 'Rhetoric', 'cat.logik': 'Logic',
+      'hard.ruhig': 'Calm', 'hard.direkt': 'Direct', 'hard.gungho': 'Gungho',
       'msg.copyReddit': 'Reddit (markdown)', 'msg.copyPlain': 'Plain text',
       'msg.copiedReddit': '✓ Reddit', 'msg.copiedPlain': '✓ Plain',
       'msg.sources': 'Sources', 'msg.analysisTitle': "Analysis of the opponent's comment",
@@ -1024,7 +1032,8 @@
         model: '',
         apiKey: '',
         platform: 'Reddit',
-        tone: 'Sachlich',
+        category: 'Fakten',
+        hardness: 'Direkt',
         lang: 'de',
         voiceSample: ''
       },
@@ -1251,7 +1260,7 @@
                 query: this.queryFromHistory(),
                 topK: 5,
                 platform: this.settings.platform,
-                tone: this.settings.tone,
+                tone: this.settings.category + ' / ' + this.settings.hardness,
                 lang: this.settings.lang
               })
             });
@@ -1342,7 +1351,6 @@
       },
 
       fallbackSystemPrompt() {
-        const tone = this.settings.tone;
         const lang = this.settings.lang;
         const isDE = lang === 'de';
 
@@ -1351,59 +1359,27 @@
           ? 'KRITISCH: Antworte AUSSCHLIESSLICH auf Deutsch. Auch Tactic-Namen, Section-Header und Quellen-Hinweise auf Deutsch (Quote-Mining bleibt Quote-Mining, aber kein Mix mit englischen Erklärsätzen).'
           : 'CRITICAL: Respond ENTIRELY in English. Section headers, tactic names, and all prose must be English. Do not mix in German sentences. Tactic-names: Quote-Mining, Strawman, Whataboutism, Goalpost-shifting, "Bullshit"-stamping, Self-contradiction, Side-step, Cherry-picking, Discipline-wash, Peer-review-trump, Selective memory.';
 
-        let toneInstruction = '';
-        if (tone === 'Sachlich' || tone === 'Hämisch') {
-          toneInstruction = isDE
-            ? `Schreib wie ein Reddit-Kommentar, kein akademisches Paper. Keine generischen Section-Header wie "Faktenkorrektur" oder "Quellen". Wenn Sections sinnvoll sind, dann mit '## kurze Aussage als Header' (max 4 Wörter, klingt wie eine Reddit-Zeile, nicht wie ein Lehrbuch). Maximum 220 Wörter.${tone === 'Hämisch' ? ' Häme an 1-2 Stellen, nie billig.' : ''}`
-            : `Write like a Reddit comment, not an academic paper. No generic section headers like "Fact correction" or "Sources". If sections make sense, use '## short Reddit-line as header' (max 4 words, sounds like a comment, not a textbook). Max 220 words.${tone === 'Snarky' || tone === 'Hämisch' ? ' Sharp jab in 1-2 places, never cheap.' : ''}`;
-        } else if (tone === 'Gungho') {
-          toneInstruction = isDE
-            ? `Vernichtend, keine Konzessionen. Nur Aktenlage gegen Behauptung. Schwache eigene Punkte weglassen.
-
-PFLICHT-STRUKTUR: Numerierte Tactic-Liste. Jede Section ist EIN Tactic-Name (kein Floskel). Format: '## 1. Selbstwiderspruch', '## 2. Quote-Mining', '## 3. Drei-Ebenen-Verklebung' usw. Inhalt jedes Punkts: 1-3 Sätze, direkt am Punkt. Max 7 Punkte. Letzter Absatz (ohne Header) ist scharfer Schluss-Satz.`
-            : `Devastating, no concessions. Only the record vs the claim. Drop weak points.
-
-REQUIRED STRUCTURE: Numbered tactic list. Each section is ONE tactic name (no filler). Format: '## 1. Self-contradiction', '## 2. Quote-Mining', '## 3. Discipline-wash' etc. Each section: 1-3 sentences, on point. Max 7 points. Last paragraph (no header) is a sharp closer.`;
-        } else if (tone === 'De-eskalierend') {
-          toneInstruction = isDE
-            ? 'Validiere Emotion, sanft auf Fakten hinweisen, Off-Ramp anbieten. KEINE Section-Header. Eine flüssige Antwort.'
-            : 'Validate emotion, gently point to facts, offer an off-ramp. NO section headers. One flowing reply.';
-        } else if (tone === 'Fact-Check pur') {
-          toneInstruction = isDE
-            ? `Pro Behauptung: Bewertung (Wahr/Teilweise/Irreführend/Falsch) + korrekte Fakten + Quelle. Section-Header sind die behaupteten Aussagen verkürzt: '## "Bürgergeld lohnt mehr als Arbeit" – falsch'. Keine generischen "Behauptung 1"-Labels.`
-            : `Per claim: rating (True/Partly/Misleading/False) + correct facts + source. Section headers ARE the claim shortened: '## "Welfare pays more than work" – false'. No generic "Claim 1" labels.`;
-        } else if (tone === 'Taktik entblößen') {
-          toneInstruction = isDE
-            ? `Bonusmodus. Erkenne die Tactic des Gegners. Section-Header IST der Tactic-Name pur: '## Quote-Mining' nicht '## Tactic: Quote-Mining'. Bei mehreren: '## Quote-Mining', '## Selbstwiderspruch'. Kein Header "Faktenlage" oder "Quellen" — die Fakten kommen unter dem Tactic-Header in Prosa, Quellen als bare URLs am Ende ohne Header.
-
-Mögliche Tactics: Quote-Mining, Cherry-Picking, Strohmann, Whataboutism, Goalpost-Verschiebung, "Bullshit"-Stempel, Drei-Ebenen-Verklebung, Disziplin-Wash, Peer-Review-Trumpf, Atlas-Network-Talking-Points, Mainstream-Diss, Selbstwiderspruch im selben Post, Side-Step, Selektives Gedächtnis, Verfahrens-Verklebung.
-
-Maximum 150 Wörter. Mitleser-First-Frame. Maximum 3 Tactics.`
-            : `Bonus mode. Identify the opponent's tactic. Section header IS the tactic name only: '## Quote-Mining' not '## Tactic: Quote-Mining'. Multiple: '## Quote-Mining', '## Self-contradiction'. No "Facts" or "Sources" header — facts go inside the tactic section as prose, sources as bare URLs at the end without a header.
-
-Possible tactics: Quote-Mining, Cherry-Picking, Strawman, Whataboutism, Goalpost-shifting, "Bullshit"-stamping, Three-level-conflation, Discipline-wash, Peer-review-trump, Atlas-Network-talking-points, Mainstream-dismissal, Self-contradiction, Side-step, Selective-memory, Procedure-conflation.
-
-Max 150 words. Reader-first frame. Max 3 tactics.`;
-        } else if (tone === 'Widerspruchsfalle') {
-          toneInstruction = isDE
-            ? `Sokratische Dekonstruktion. Nicht Fakten-first. Finde im Kommentar ZWEI Positionen (oder eine Aussage plus eine Forderung), die sich gegenseitig kassieren, und leg sie offen, sodass der Gegner es selbst merkt.
-
-Aufbau: 1) Scheininteresse-Opener, trocken ("ah interessant" / "verstehe ich dich richtig"), nicht überzogen-sarkastisch. 2) Seine zwei Positionen wortnah nebeneinander. 3) Die Zange als AUSSAGE, nicht als Bittfrage ("eins von beidem musst du aufgeben"). 4) Genau EINE harte Zahl als Nachschlag, inline eingewebt, keine Quellen-Liste.
-
-Regeln: nur EIN Widerspruch (nicht stapeln). Seine Worte, nicht deine Interpretation. Kein Dauer-Nachbohren (kein Sealioning). Wenn KEIN echter Selbstwiderspruch im Kommentar steckt, sag das und schlag einen normalen Konter vor, erfinde keinen Widerspruch. KEINE generischen Section-Header, eine flüssige Antwort. Max 120 Wörter.
-
-Beispiel-Muster: "ah interessant, du findest 0% wachstum zu wenig und willst gleichzeitig ein viertel der erwerbstätigen abschieben (30% der bevölkerung haben migrationshintergrund). eins von beidem geht nur."`
-            : `Socratic deconstruction. Not facts-first. Find TWO positions in the comment (or one claim plus a demand) that cancel each other out, and expose them so the opponent sees it himself.
-
-Structure: 1) Feigned-interest opener, dry ("ah, interesting" / "let me get this right"), not over-the-top sarcastic. 2) His two positions side by side, close to his wording. 3) The pincer as a STATEMENT, not a pleading question ("you have to give up one of the two"). 4) Exactly ONE hard number as a follow-up, woven in, no source list.
-
-Rules: only ONE contradiction (don't stack). His words, not your paraphrase. No endless probing (no sealioning). If there is NO real self-contradiction in the comment, say so and propose a normal counter instead, don't invent one. NO generic section headers, one flowing reply. Max 120 words.`;
-        } else {
-          toneInstruction = isDE
-            ? `Ton: ${tone}. Sachlich faktenfest. Section-Header optional als kurze Reddit-artige Aussagen.`
-            : `Tone: ${tone}. Factual. Section headers optional as short Reddit-style lines.`;
-        }
-
+        const cat = this.settings.category || 'Fakten';
+        const hard = this.settings.hardness || 'Direkt';
+        const catMap = isDE ? {
+          'Fakten': `Greife die FAKTEN an: widerlege die Behauptung mit Quellen, für die stillen Mitleser. Bei MEHREREN diskreten Behauptungen eine Punktetafel (pro Behauptung Wahr/Teilweise/Irreführend/Falsch plus Quelle, Header = die verkürzte Behauptung). Bei EINER Behauptung ein flüssiger, belegter Konter. Keine generischen Header wie "Faktenkorrektur". Schreib wie ein Reddit-Kommentar, max 220 Wörter.`,
+          'Rhetorik': `Greife die RHETORIK an: benenne die manipulative Taktik des Gegners beim Namen. Section-Header IST der Taktik-Name pur ('## Quote-Mining', '## Whataboutism', '## Beweislastumkehr'), Fakten als Prosa darunter, Quellen als bare URLs am Ende. Max 3 Taktiken, max 150 Wörter, Mitleser-first: zeig WAS er tut, bevor du zeigst warum es falsch ist. Mögliche Taktiken: Quote-Mining, Cherry-Picking, Strohmann, Whataboutism, Goalpost-Verschiebung, Gish-Gallop, Sippenhaft-Logik, Disziplin-Wash, Peer-Review-Trumpf, Selektives Gedächtnis, Selbstwiderspruch.`,
+          'Logik': `Greife die LOGIK an (Widerspruchsfalle): finde ZWEI Aussagen (oder eine Aussage plus Forderung) des Gegners, die sich gegenseitig kassieren. Scheininteresse-Opener ("ah interessant"), seine zwei Positionen wortnah nebeneinander, die Zange als AUSSAGE ("eins von beidem geht nur"), eine harte Zahl als Nachschlag. Nur EIN Widerspruch, kein Sealioning, keine generischen Header, eine flüssige Antwort, max 120 Wörter. Wenn KEIN echter Widerspruch da ist, sag das und greif stattdessen die Fakten an, erfinde nie einen.`
+        } : {
+          'Fakten': `Attack the FACTS: refute the claim with sources, for the silent lurkers. For MULTIPLE discrete claims use a scorecard (per claim True/Partly/Misleading/False plus source, header = the shortened claim). For ONE claim a flowing, sourced counter. No generic headers like "Fact correction". Write like a Reddit comment, max 220 words.`,
+          'Rhetorik': `Attack the RHETORIC: name the opponent's manipulative tactic. The section header IS the tactic name only ('## Quote-Mining', '## Whataboutism', '## Burden-shift'), facts as prose underneath, sources as bare URLs at the end. Max 3 tactics, max 150 words, reader-first: show WHAT he does before why it is wrong. Possible tactics: Quote-Mining, Cherry-Picking, Strawman, Whataboutism, Goalpost-shifting, Gish-Gallop, Guilt-by-association, Discipline-wash, Peer-review-trump, Selective-memory, Self-contradiction.`,
+          'Logik': `Attack the LOGIC (contradiction trap): find TWO of the opponent's statements (or one claim plus a demand) that cancel each other out. Feigned-interest opener ("interesting"), his two positions side by side, the pincer as a STATEMENT ("you have to give up one of the two"), one hard number as a follow-up. Only ONE contradiction, no sealioning, no generic headers, one flowing reply, max 120 words. If there is NO real contradiction, say so and attack the facts instead, never invent one.`
+        };
+        const hardMap = isDE ? {
+          'Ruhig': `Härtegrad RUHIG: sanfter Ton, Emotion validieren wo nötig, Konzessionen erlaubt, Off-Ramp anbieten, Beziehung schützen. Für Menschen die du kennst oder gewinnen willst. Eine ruhige, flüssige Antwort.`,
+          'Direkt': `Härtegrad DIREKT: sachlich und klar, keine unnötigen Konzessionen, aber kein Angriff. Der Standard.`,
+          'Gungho': `Härtegrad GUNGHO: vernichtend, keine Konzessionen, nur Aktenlage gegen die Behauptung, schwache eigene Punkte weglassen, scharfer Schluss-Satz. KEIN Spott, kein Sarkasmus (das gibt dem Gegner Opfer-Modus-Munition). Für Brigader und dreiste Lügen.`
+        } : {
+          'Ruhig': `Hardness CALM: gentle tone, validate emotion where needed, concessions allowed, offer an off-ramp, protect the relationship. For people you know or want to win over. One calm, flowing reply.`,
+          'Direkt': `Hardness DIRECT: factual and clear, no unnecessary concessions, but no attack. The default.`,
+          'Gungho': `Hardness GUNGHO: devastating, no concessions, only the record vs the claim, drop weak points, sharp closer. NO mockery, no sarcasm (that hands the opponent victim-mode ammunition). For brigaders and brazen lies.`
+        };
+        const toneInstruction = (catMap[cat] || catMap['Fakten']) + '\n\n' + (hardMap[hard] || hardMap['Direkt']);
         const formatBlock = isDE
           ? `ZWEI-TEIL-FORMAT (PFLICHT):
 
@@ -1545,7 +1521,7 @@ Anti-AI rules above still apply, no contradiction with VOICE.`)
 Du bist Boldclaim, ein Assistent für faktenbasierte Counter-Speech.
 Plattform: ${platformLabel}. Sprache: ${lang}.
 
-TON-MODUS: ${tone}
+KATEGORIE: ${cat}  HÄRTE: ${hard}
 ${toneInstruction}
 
 ${antiAi}${voiceBlock}
@@ -1768,7 +1744,7 @@ ${langTop}`;
         this.messages = [];
         this.archive = [];
         this.activeConvId = null;
-        Object.assign(this.settings, { provider: 'anthropic', model: '', apiKey: '', platform: 'Reddit', tone: 'Sachlich', lang: 'de' });
+        Object.assign(this.settings, { provider: 'anthropic', model: '', apiKey: '', platform: 'Reddit', category: 'Fakten', hardness: 'Direkt', lang: 'de' });
         this.settings.model = this.defaultModel('anthropic');
       },
 
