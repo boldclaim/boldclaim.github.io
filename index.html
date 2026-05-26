@@ -387,18 +387,54 @@
             <option value="Mündlich" x-text="t('platform.spoken')"></option>
             <option value="WhatsApp" x-text="t('platform.whatsapp')"></option>
           </select>
-          <span class="text-zinc-400 dark:text-zinc-600" x-text="t('comp.cat')"></span>
-          <select x-model="settings.category" @change="saveSettings()" class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-md px-2 py-1 font-medium text-zinc-700 dark:text-zinc-300 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600 cursor-pointer">
-            <option value="Fakten" x-text="t('cat.fakten')"></option>
-            <option value="Rhetorik" x-text="t('cat.rhetorik')"></option>
-            <option value="Logik" x-text="t('cat.logik')"></option>
-          </select>
-          <span class="text-zinc-400 dark:text-zinc-600" x-text="t('comp.hard')"></span>
-          <select x-model="settings.hardness" @change="saveSettings()" class="bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-md px-2 py-1 font-medium text-zinc-700 dark:text-zinc-300 focus:outline-none focus:border-zinc-400 dark:focus:border-zinc-600 cursor-pointer">
-            <option value="Ruhig" x-text="t('hard.ruhig')"></option>
-            <option value="Direkt" x-text="t('hard.direkt')"></option>
-            <option value="Gungho" x-text="t('hard.gungho')"></option>
-          </select>
+          <span class="text-zinc-400 dark:text-zinc-600" x-text="t('comp.view')"></span>
+          <div class="inline-flex rounded-md border border-zinc-200 dark:border-zinc-700 overflow-hidden">
+            <button type="button" @click="settings.selectorStyle='pills'; saveSettings()"
+              class="px-2 py-1 font-medium transition"
+              :class="settings.selectorStyle==='pills' ? 'bg-indigo-600 text-white' : 'bg-white dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300'">Pills</button>
+            <button type="button" @click="settings.selectorStyle='pad'; saveSettings()"
+              class="px-2 py-1 font-medium transition border-l border-zinc-200 dark:border-zinc-700"
+              :class="settings.selectorStyle==='pad' ? 'bg-indigo-600 text-white' : 'bg-white dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300'">Pad</button>
+          </div>
+          <template x-if="settings.selectorStyle==='pills'">
+            <span class="inline-flex flex-wrap items-center gap-1.5">
+              <span class="text-zinc-400 dark:text-zinc-600" x-text="t('comp.cat')"></span>
+              <div class="inline-flex rounded-md border border-zinc-200 dark:border-zinc-700 overflow-hidden">
+                <template x-for="c in cats" :key="'cc'+c[0]">
+                  <button type="button" @click="settings.category=c[0]; saveSettings()"
+                    class="px-2 py-1 font-medium transition border-l first:border-l-0 border-zinc-200 dark:border-zinc-700"
+                    :class="settings.category===c[0] ? 'bg-indigo-600 text-white' : 'bg-white dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700'"
+                    x-text="t(c[1])"></button>
+                </template>
+              </div>
+              <span class="text-zinc-400 dark:text-zinc-600" x-text="t('comp.hard')"></span>
+              <div class="inline-flex rounded-md border border-zinc-200 dark:border-zinc-700 overflow-hidden">
+                <template x-for="h in hards" :key="'ch'+h[0]">
+                  <button type="button" @click="settings.hardness=h[0]; saveSettings()"
+                    class="px-2 py-1 font-medium transition border-l first:border-l-0 border-zinc-200 dark:border-zinc-700"
+                    :class="settings.hardness===h[0] ? 'bg-indigo-600 text-white' : 'bg-white dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700'"
+                    x-text="t(h[1])"></button>
+                </template>
+              </div>
+            </span>
+          </template>
+          <template x-if="settings.selectorStyle==='pad'">
+            <span class="inline-flex items-center gap-2">
+              <div class="flex gap-1 items-center">
+                <div class="flex flex-col justify-between self-stretch text-[8px] leading-none uppercase text-zinc-400 dark:text-zinc-600 text-right py-0.5">
+                  <template x-for="h in hards" :key="'crl'+h[0]"><span x-text="t(h[1])"></span></template>
+                </div>
+                <div class="grid grid-cols-3 gap-1.5">
+                  <template x-for="h in hards" :key="'cr'+h[0]"><template x-for="c in cats" :key="'ccell'+c[0]+h[0]">
+                    <button type="button" :title="t(c[1])+' · '+t(h[1])" @click="settings.category=c[0]; settings.hardness=h[0]; saveSettings()"
+                      class="w-4 h-4 rounded-full border transition"
+                      :class="(settings.category===c[0]&&settings.hardness===h[0]) ? 'bg-indigo-600 border-indigo-600 scale-125' : 'border-zinc-300 dark:border-zinc-600 hover:border-indigo-400'"></button>
+                  </template></template>
+                </div>
+              </div>
+              <span class="text-zinc-500 dark:text-zinc-400 font-medium" x-text="settings.category + ' · ' + settings.hardness"></span>
+            </span>
+          </template>
         </div>
 
         <!-- Pending images -->
@@ -917,7 +953,7 @@
       'platform.reddit': 'Reddit', 'platform.twitter': 'X/Twitter', 'platform.spoken': 'Mündlich', 'platform.whatsapp': 'WhatsApp',
       'tone.factual': 'Sachlich', 'tone.snarky': 'Hämisch', 'tone.gungho': 'Gungho',
       'tone.deescalate': 'De-eskalierend', 'tone.factcheck': 'Fact-Check pur', 'tone.expose': 'Taktik entblößen', 'tone.contradiction': 'Widerspruchsfalle',
-      'comp.cat': 'Kategorie', 'comp.hard': 'Härte', 'set.cat': 'Kategorie', 'set.hard': 'Härte',
+      'comp.cat': 'Kategorie', 'comp.hard': 'Härte', 'comp.view': 'Auswahl', 'set.cat': 'Kategorie', 'set.hard': 'Härte',
       'cat.fakten': 'Fakten', 'cat.rhetorik': 'Rhetorik', 'cat.logik': 'Logik',
       'hard.ruhig': 'Ruhig', 'hard.direkt': 'Direkt', 'hard.gungho': 'Gungho',
       'msg.copyReddit': 'Reddit (Markdown)', 'msg.copyPlain': 'Plain Text',
@@ -969,7 +1005,7 @@
       'platform.reddit': 'Reddit', 'platform.twitter': 'X/Twitter', 'platform.spoken': 'Spoken', 'platform.whatsapp': 'WhatsApp',
       'tone.factual': 'Factual', 'tone.snarky': 'Snarky', 'tone.gungho': 'Gung-ho',
       'tone.deescalate': 'De-escalating', 'tone.factcheck': 'Fact-check only', 'tone.expose': 'Expose tactic', 'tone.contradiction': 'Contradiction trap',
-      'comp.cat': 'Category', 'comp.hard': 'Hardness', 'set.cat': 'Category', 'set.hard': 'Hardness',
+      'comp.cat': 'Category', 'comp.hard': 'Hardness', 'comp.view': 'Selector', 'set.cat': 'Category', 'set.hard': 'Hardness',
       'cat.fakten': 'Facts', 'cat.rhetorik': 'Rhetoric', 'cat.logik': 'Logic',
       'hard.ruhig': 'Calm', 'hard.direkt': 'Direct', 'hard.gungho': 'Gungho',
       'msg.copyReddit': 'Reddit (markdown)', 'msg.copyPlain': 'Plain text',
@@ -1034,6 +1070,7 @@
         platform: 'Reddit',
         category: 'Fakten',
         hardness: 'Direkt',
+        selectorStyle: 'pills',
         lang: 'de',
         voiceSample: ''
       },
@@ -1348,6 +1385,17 @@
           }
         }
         return out;
+      },
+
+      cats: [['Fakten','cat.fakten'],['Rhetorik','cat.rhetorik'],['Logik','cat.logik']],
+      hards: [['Ruhig','hard.ruhig'],['Direkt','hard.direkt'],['Gungho','hard.gungho']],
+      modeStyleName() {
+        const m = {
+          'Fakten|Ruhig':'Sanfter Quellen-Konter','Fakten|Direkt':'Sachlicher Quellen-Konter','Fakten|Gungho':'Faktenbombe, keine Konzession',
+          'Rhetorik|Ruhig':'Trick freundlich benennen','Rhetorik|Direkt':'Taktik entblößen','Rhetorik|Gungho':'Taktik-Demontage, schonungslos',
+          'Logik|Ruhig':'Widerspruch sanft aufzeigen','Logik|Direkt':'Widerspruchsfalle','Logik|Gungho':'Widerspruchsfalle, vernichtend'
+        };
+        return m[(this.settings.category||'Fakten')+'|'+(this.settings.hardness||'Direkt')] || '';
       },
 
       fallbackSystemPrompt() {
@@ -1744,7 +1792,7 @@ ${langTop}`;
         this.messages = [];
         this.archive = [];
         this.activeConvId = null;
-        Object.assign(this.settings, { provider: 'anthropic', model: '', apiKey: '', platform: 'Reddit', category: 'Fakten', hardness: 'Direkt', lang: 'de' });
+        Object.assign(this.settings, { provider: 'anthropic', model: '', apiKey: '', platform: 'Reddit', category: 'Fakten', hardness: 'Direkt', selectorStyle: 'pills', lang: 'de' });
         this.settings.model = this.defaultModel('anthropic');
       },
 
