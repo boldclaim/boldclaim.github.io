@@ -116,7 +116,7 @@
   <script>
     // Light default. Dark only if user explicitly toggled.
     (function() {
-      if (localStorage.getItem('boldclaim_theme') === 'dark') {
+      if (localStorage.getItem('boldclaim_theme_v2') === 'dark') {
         document.documentElement.classList.add('dark');
       }
     })();
@@ -1164,7 +1164,7 @@
       toggleTheme() {
         this.dark = !this.dark;
         document.documentElement.classList.toggle('dark', this.dark);
-        localStorage.setItem('boldclaim_theme', this.dark ? 'dark' : 'light');
+        localStorage.setItem('boldclaim_theme_v2', this.dark ? 'dark' : 'light');
       },
 
       // Settings
@@ -1788,7 +1788,7 @@ ${langTop}`;
 
       clearAll() {
         if (!confirm(this.t('set.clearConfirm'))) return;
-        ['boldclaim_settings_v2', 'boldclaim_session_v2', 'boldclaim_archive_v2', 'boldclaim_theme'].forEach(k => localStorage.removeItem(k));
+        ['boldclaim_settings_v2', 'boldclaim_session_v2', 'boldclaim_archive_v2', 'boldclaim_theme_v2'].forEach(k => localStorage.removeItem(k));
         this.messages = [];
         this.archive = [];
         this.activeConvId = null;
