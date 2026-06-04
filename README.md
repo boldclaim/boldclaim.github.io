@@ -7,6 +7,7 @@ Single-file vanilla HTML chat-UI für faktenbasierte Counter-Speech. Inferenz l�
 ## Status
 
 - v2.0 Phase A — Skeleton, lokal testbar
+- Quellen-Anbindung live: KB-Suche via Bold-Claim-Worker, Antwort-Generierung bleibt BYOK
 - BYOK-only Architektur (kein Server-LLM-Fallback)
 - Multi-Provider Streaming, Vision-fähig (Anthropic + OpenAI)
 
@@ -22,8 +23,8 @@ API-Key in Settings (Gear-Icon oben rechts) eintragen, "Verbindung testen", los.
 ## Privacy
 
 - API-Key bleibt im Browser localStorage, niemals auf einem Server
-- Counter-Text geht direkt vom Browser zum Provider, nicht über uns
-- Kein Pinecone, kein externer Worker (in dieser Phase)
+- Counter-Text wird im Browser mit deinem eigenen Provider generiert, nicht über uns
+- Die Suchanfrage geht an den Bold-Claim-Worker, der passende Quellen aus der Wissensdatenbank (Pinecone) holt. Der Worker sieht nur die Suchanfrage, nie deinen API-Key und nie die generierte Antwort.
 - Quellcode ist die Wahrheit, lies `index.html`
 
 ## Stack
