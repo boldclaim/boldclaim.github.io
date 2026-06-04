@@ -280,7 +280,7 @@
         <div class="mt-12 flex flex-wrap gap-x-3 gap-y-1 text-xs text-zinc-500 dark:text-zinc-500">
           <button @click="settingsOpen=true; settingsTab='onboarding'" class="underline hover:text-zinc-700 dark:hover:text-zinc-300" x-text="t('welcome.setup')"></button>
           <button @click="settingsOpen=true; settingsTab='privacy'" class="underline hover:text-zinc-700 dark:hover:text-zinc-300" x-text="t('welcome.privacy')"></button>
-          <a href="https://github.com/boldclaim/chat" target="_blank" rel="noopener" class="underline hover:text-zinc-700 dark:hover:text-zinc-300" x-text="t('welcome.code')"></a>
+          <a href="https://github.com/boldclaim/boldclaim.github.io" target="_blank" rel="noopener" class="underline hover:text-zinc-700 dark:hover:text-zinc-300" x-text="t('welcome.code')"></a>
           <a href="./modi.html" class="underline hover:text-zinc-700 dark:hover:text-zinc-300">Modi erklärt</a>
         </div>
       </div>
@@ -1630,7 +1630,7 @@ ${langTop}`;
           'Content-Type': 'application/json'
         };
         if (provider === 'openrouter') {
-          headers['HTTP-Referer'] = 'https://boldclaim.github.io/chat';
+          headers['HTTP-Referer'] = 'https://boldclaim.github.io';
           headers['X-Title'] = 'Boldclaim';
         }
         const res = await fetch(url, {
