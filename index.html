@@ -1335,7 +1335,14 @@
                 lang: this.settings.lang
               })
             });
-            if (ctxRes.ok) context = await ctxRes.json();
+            if (ctxRes.ok) {
+              const w = await ctxRes.json();
+              context.docs = w.docs || [];
+              // Knowledge from Pinecone, but ALWAYS keep our voice+tactics prompt
+              // (do not let the worker's basic prompt overwrite it).
+              const knowledge = this.knowledgeBlock(context.docs);
+              if (knowledge) context.systemPrompt = this.fallbackSystemPrompt() + '\n\n' + knowledge;
+            }
           } catch (e) { /* fallback */ }
         }
 
@@ -1481,6 +1488,17 @@
         return m[(this.settings.category||'Fakten')+'|'+(this.settings.hardness||'Direkt')] || '';
       },
 
+      // Inject the retrieved Pinecone evidence with a hard grounding rule (the website's
+      // live-source discipline: only cite what is in the evidence, never from memory).
+      knowledgeBlock(docs) {
+        if (!docs || !docs.length) return '';
+        const isDE = this.settings.lang === 'de';
+        const head = isDE
+          ? 'BELEGE AUS DEINER WISSENSDATENBANK. Das ist deine EINZIGE Faktenbasis. Jede Zahl, jedes Datum und jede Quelle im Reply MUSS aus diesen Belegen stammen. Erfinde nichts, runde nichts aus dem Gedächtnis, zitiere keine Quelle die hier nicht steht. Fehlt ein nötiger Beleg, sag das statt zu raten.'
+          : 'EVIDENCE FROM YOUR KNOWLEDGE BASE. This is your ONLY factual basis. Every number, date and source in the reply MUST come from this evidence. Invent nothing, do not round from memory, do not cite a source not listed here. If a needed fact is missing, say so instead of guessing.';
+        const body = docs.map((d, i) => '[' + (i + 1) + '] (' + (d.source || 'Quelle') + ') ' + (d.snippet || '')).join('\n\n');
+        return head + '\n\n' + body;
+      },
       fallbackSystemPrompt() {
         const lang = this.settings.lang;
         const isDE = lang === 'de';
@@ -1647,6 +1665,28 @@ Anti-AI rules above still apply, no contradiction with VOICE.`)
 - If user attached image, read text/context in it
 - NEVER xenophobic. No statistics that demean groups wholesale.`;
 
+        const tactics = isDE
+          ? `TAKTIK (so wird der Konter scharf, nicht nur korrekt):
+- Quelle-Bumerang ist die stärkste Waffe: zitiert der Gegner eine Studie oder Quelle, zitiere DIESELBE Quelle, aber den Teil den er nicht gelesen hat. Was die Zahl wirklich misst, nicht die Schlagzeile.
+- Inversions-Check (Pflicht bei jeder Statistik): stell dir vor der Gegner zitiert deine Zahl zurück, hilft sie ihm dann? "38% Femizide durch Deutsche" wird zu "also 62% durch Ausländer bei 15% Bevölkerung, danke". Wenn ja: andere Zahl oder anderes Framing. Ein einziges Eigentor kippt den ganzen Konter.
+- Konzession-sicher: schreib nie einen Satz der als Screenshot dem Gegner dient. Nicht "die Überrepräsentation ist real", sondern den Kontext IN den Satz bauen ("die Tatverdächtigenzahlen überrepräsentieren Nichtdeutsche, weil die Kategorie Delikte enthält die nur Ausländer begehen können"). Test: liest sich der Konzessions-Satz allein wie eine Gegner-Schlagzeile, dann umformulieren.
+- Zur ungünstigeren Zahl zitieren: bei Unsicherheit die für dich schlechtere Zahl nehmen. Ein übertriebener Wert verbrennt jede andere Zahl.
+- Frame-Kollaps schlägt Punkt-für-Punkt: hat der Gegner ein Erklärungsmodell, kill die 2 tragenden Säulen mit je einem Datenpunkt statt einer Liste.
+- Bauchgefühl-Anker: zu jedem Daten-Konter EIN einfacher Satz für Mitleser ohne Statistik ("niemand rechnet Mord weg mit es gibt mehr Verkehrstote").
+- Akademisch zu Klartext: nicht "negative Korrelation zwischen Aufenthaltsstatus und Kriminalitätsbelastung", sondern "dieselben Leute, arbeiten dürfen = weniger Kriminalität, Arbeitsverbot = mehr".
+- Für die stillen Mitleser schreiben, nicht für den Kommentator. EIN Fehler pro Konter, kein Vortrag, max 4-5 Sätze.
+- Nie moralisieren, nie sarkastisch, flach bleiben. Opfer-Modus ("darf man nichts mehr fragen") nur mit Substanz kontern, nie mit Empörung, die ist sein Treibstoff.`
+          : `TACTICS (this makes the counter sharp, not just correct):
+- Source-boomerang is the strongest weapon: if they cite a study or source, cite the SAME source, the part they did not read. What the number actually measures, not the headline.
+- Inversion check (mandatory on every statistic): imagine they quote your number back, does it help them? "38% of femicides by Germans" becomes "so 62% by foreigners at 15% of the population, thanks". If yes, pick a different number or framing. One own-goal sinks the whole counter.
+- Concession-proof: never write a line that works as a screenshot for them. Not "the overrepresentation is real", build the context INTO the sentence. Test: if the concession reads alone like their headline, rephrase.
+- Cite toward the less favourable number: when unsure, use the figure worse for you. One overshoot burns every other number.
+- Frame-collapse beats point-by-point: if they have an explanatory model, kill its 2 load-bearing pillars with one datapoint each, not a list.
+- Gut-feel anchor: one plain-language line per data counter for lurkers without statistics.
+- Academic to plain: not "negative correlation between residence status and crime", but "same people, allowed to work = less crime, banned from working = more".
+- Write for the silent lurkers, not the commenter. ONE error per counter, no lecture, max 4-5 sentences.
+- Never moralise, never sarcastic, stay flat. Counter victim-mode only with substance, never with outrage, it is their fuel.`;
+
         return `${langTop}
 
 Du bist Boldclaim, ein Assistent für faktenbasierte Counter-Speech.
@@ -1656,6 +1696,8 @@ KATEGORIE: ${cat}  HÄRTE: ${hard}
 ${toneInstruction}
 
 ${antiAi}${voiceBlock}
+
+${tactics}
 
 ${formatBlock}
 
