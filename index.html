@@ -1350,6 +1350,7 @@
             if (ctxRes.ok) {
               const w = await ctxRes.json();
               context.docs = w.docs || [];
+              context.sourceUrls = w.sourceUrls || [];
               // Knowledge from Pinecone, but ALWAYS keep our voice+tactics prompt
               // (do not let the worker's basic prompt overwrite it).
               // Live method/tactics from Pinecone (worker), with the built-in block as fallback.
@@ -1367,6 +1368,7 @@
           content: '',
           streaming: true,
           sources: context.docs || [],
+          sourceUrls: context.sourceUrls || [],
           ts: Date.now()
         };
         this.messages.push(assistantMsg);
@@ -1422,10 +1424,19 @@
         const evidence = (msg.sources || []).map((s, i) =>
           '[' + (i + 1) + '] ' + (s.source ? s.source + ': ' : '') + (s.snippet || '')
         ).join('\n') || (isDE ? '(keine Belege abgerufen)' : '(no evidence retrieved)');
+        // Live-source fetch: pull the top source's live page (server-side via the worker) so the
+        // critic can reconcile the draft's numbers against the current page and catch stale figures.
+        let live = '';
+        if (msg.sourceUrls && msg.sourceUrls.length && WORKER_URL) {
+          try {
+            const fr = await fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'fetchSource', url: msg.sourceUrls[0] }) });
+            if (fr.ok) { const fd = await fr.json(); live = (fd.text || '').slice(0, 3000); }
+          } catch (e) { /* live-fetch is non-fatal */ }
+        }
         const sys = isDE
           ? `Du bist ein gnadenloser Konter-Prüfer für Bold Claim. Du verbesserst den ENTWURF, du lobst nicht und erklärst deine Änderungen nicht. Gib NUR den finalen Konter zurück, im exakt gleichen Aufbau wie der Entwurf (sind ein Analyse-Teil und ein ~~~REPLY~~~-Marker vorhanden, behalte sie).
 Prüfe und fixe in dieser Reihenfolge:
-1. ERFINDUNG/GROUNDING: jede Zahl, jedes Datum, jede Quelle MUSS in den BELEGEN stehen. Aus dem Gedächtnis gerundete oder erfundene Zahlen raus oder durch belegte ersetzen. Fehlt ein Beleg, Behauptung schwächen bis sie gedeckt ist, nicht raten.
+1. ERFINDUNG/GROUNDING: jede Zahl, jedes Datum, jede Quelle MUSS in den BELEGEN stehen. Aus dem Gedächtnis gerundete oder erfundene Zahlen raus oder durch belegte ersetzen. Fehlt ein Beleg, Behauptung schwächen bis sie gedeckt ist, nicht raten. Liegt eine LIVE-QUELLE bei, gleiche jede Zahl damit ab und korrigiere veraltete Werte auf den Live-Stand.
 2. EIGENTOR/INVERSION: jede Statistik invertiert prüfen. Hilft sie dem Gegner wenn er sie zurückwirft (38% durch X heißt 62% durch Y), raus oder anders framen.
 3. STROHMANN: nur kontern was der Gegner WÖRTLICH gesagt hat.
 4. KONZESSION: kein Satz der als Gegner-Screenshot funktioniert, Kontext in den Satz bauen.
@@ -1433,7 +1444,7 @@ Prüfe und fixe in dieser Reihenfolge:
 Ist der Entwurf schon sauber, gib ihn unverändert zurück.`
           : `You are a merciless counter-checker for Bold Claim. You IMPROVE the draft, you do not praise and do not explain your changes. Return ONLY the final counter, in the exact same structure as the draft (if an analysis part and a ~~~REPLY~~~ marker are present, keep them).
 Check and fix, in order:
-1. FABRICATION/GROUNDING: every number, date and source MUST appear in the EVIDENCE. Remove or replace memory-rounded or invented numbers with sourced ones. If a fact is missing, weaken the claim until it is covered, do not guess.
+1. FABRICATION/GROUNDING: every number, date and source MUST appear in the EVIDENCE. Remove or replace memory-rounded or invented numbers with sourced ones. If a fact is missing, weaken the claim until it is covered, do not guess. If a LIVE SOURCE is attached, reconcile every number against it and correct stale values to the live figure.
 2. OWN-GOAL/INVERSION: check every statistic inverted. If it helps the opponent when quoted back (38% by X means 62% by Y), cut or reframe it.
 3. STRAWMAN: only counter what the opponent literally said.
 4. CONCESSION: no sentence that works as their screenshot, build the context into the sentence.
@@ -1441,6 +1452,7 @@ Check and fix, in order:
 If the draft is already clean, return it unchanged.`;
         const user = (isDE ? 'GEGNER-KOMMENTAR:\n' : 'OPPONENT COMMENT:\n') + comment +
           '\n\n' + (isDE ? 'BELEGE:\n' : 'EVIDENCE:\n') + evidence +
+          (live ? '\n\n' + (isDE ? 'LIVE-QUELLE (frisch geladene Original-Seite, Auszug):\n' : 'LIVE SOURCE (freshly fetched original page, excerpt):\n') + live : '') +
           '\n\n' + (isDE ? 'ENTWURF:\n' : 'DRAFT:\n') + msg.content;
         try {
           const refined = await this.callProvider({ systemPrompt: sys, messages: [{ role: 'user', content: user }], stream: false });
