@@ -330,6 +330,36 @@
                 </div>
               </template>
 
+              <!-- Trust badge (assistant only, driven by msg.trust; 'unknown'/unset renders nothing) -->
+              <template x-if="msg.role === 'assistant' && !msg.streaming && msg.trust && msg.trust !== 'unknown'">
+                <div class="mt-2.5">
+                  <template x-if="msg.trust === 'checking'">
+                    <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 border border-zinc-200 dark:border-zinc-700">
+                      <span class="w-1.5 h-1.5 rounded-full bg-zinc-400 dark:bg-zinc-500 animate-pulse"></span>
+                      <span x-text="t('trust.checking')"></span>
+                    </span>
+                  </template>
+                  <template x-if="msg.trust === 'pass'">
+                    <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                      <span x-text="t('trust.pass')"></span>
+                    </span>
+                  </template>
+                  <template x-if="msg.trust === 'fail'">
+                    <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium bg-amber-50 dark:bg-amber-500/10 text-amber-800 dark:text-amber-200 border border-amber-300 dark:border-amber-500/40">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                      <span x-text="t('trust.fail')"></span>
+                    </span>
+                  </template>
+                  <template x-if="msg.trust === 'unsure'">
+                    <span class="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium bg-zinc-50 dark:bg-zinc-800/60 text-zinc-500 dark:text-zinc-400 border border-zinc-200 dark:border-zinc-700">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                      <span x-text="t('trust.unsure')"></span>
+                    </span>
+                  </template>
+                </div>
+              </template>
+
               <!-- Footer (assistant only) -->
               <template x-if="msg.role === 'assistant' && !msg.streaming">
                 <div class="mt-2.5 pt-2 border-t border-zinc-100 dark:border-zinc-800 flex flex-wrap items-center gap-3 text-xs text-zinc-500">
@@ -960,6 +990,8 @@
       'msg.copiedReddit': '✓ Reddit', 'msg.copiedPlain': '✓ Plain',
       'msg.sources': 'Quellen', 'msg.analysisTitle': 'Analyse des Gegner-Kommentars',
       'msg.analysisHint': '(nicht zum Posten)',
+      'trust.checking': 'Prüfe Quellen ...', 'trust.pass': 'Geprüft, deckt sich mit den Quellen',
+      'trust.fail': 'Vorsicht, nicht durch die Quellen gedeckt', 'trust.unsure': 'Quellenlage unklar',
       'set.tab.general': 'Allgemein', 'set.tab.setup': 'Setup', 'set.tab.privacy': 'Privacy',
       'set.provider': 'Provider', 'set.model': 'Modell', 'set.customOpt': 'Eigenes Modell eingeben...',
       'set.customPh': 'exakter Modellname', 'set.apiKey': 'API-Key', 'set.show': 'zeigen', 'set.hide': 'verbergen',
@@ -1012,6 +1044,8 @@
       'msg.copiedReddit': '✓ Reddit', 'msg.copiedPlain': '✓ Plain',
       'msg.sources': 'Sources', 'msg.analysisTitle': "Analysis of the opponent's comment",
       'msg.analysisHint': '(not for posting)',
+      'trust.checking': 'Checking sources ...', 'trust.pass': 'Verified, matches the sources',
+      'trust.fail': 'Caution, not covered by the sources', 'trust.unsure': 'Source coverage unclear',
       'set.tab.general': 'General', 'set.tab.setup': 'Setup', 'set.tab.privacy': 'Privacy',
       'set.provider': 'Provider', 'set.model': 'Model', 'set.customOpt': 'Enter custom model...',
       'set.customPh': 'exact model name', 'set.apiKey': 'API key', 'set.show': 'show', 'set.hide': 'hide',
@@ -1338,6 +1372,54 @@
           this.messages[idx].streaming = false;
           if (!this.messages[idx].error) this.messages[idx].content = this.deAI(this.messages[idx].content);
           this.busy = false;
+          this.currentAbort = null;
+          this.persistSession();
+          // Trust check runs AFTER the answer is rendered, so the user never waits for it.
+          // Only when the answer succeeded and the message actually has sources to check against.
+          const am = this.messages[idx];
+          if (am && !am.error && am.content && am.sources && am.sources.length) {
+            await this.runTrustCheck(idx);
+          }
+        }
+      },
+
+      // BYOK trust check (source self-verification). Runs in the user's browser via their own
+      // provider key, never on a server. Sets messages[idx].trust to one of:
+      // 'checking' | 'pass' | 'fail' | 'unsure' | 'unknown'. Never throws; on any error the
+      // answer stands unchanged with trust 'unknown' (badge renders nothing).
+      async runTrustCheck(idx) {
+        const msg = this.messages[idx];
+        if (!msg || !msg.sources || !msg.sources.length) return;
+        // Guard: pin the message id so a newer message never receives a stale verdict.
+        const msgId = msg.id;
+        this.messages[idx].trust = 'checking';
+        try {
+          const answer = this.splitContent(msg.content || '').reply || msg.content || '';
+          const sourceText = msg.sources
+            .map((s, i) => {
+              const label = s.source ? (s.source + ': ') : '';
+              return '[' + (i + 1) + '] ' + label + (s.snippet || '');
+            })
+            .join('\n');
+          const verifySystem = 'Du bist ein strenger Faktenprüfer. Prüfe NUR, ob die folgende Antwort durch die angegebenen Quellen gedeckt ist und ihnen nicht widerspricht. Antworte mit GENAU einem Wort: ja, nein oder unklar.';
+          const verifyUser = 'ANTWORT:\n' + answer + '\n\nQUELLEN:\n' + sourceText;
+          const raw = await this.callProvider({
+            systemPrompt: verifySystem,
+            messages: [{ role: 'user', content: verifyUser }],
+            stream: false
+          });
+          // The message may have moved if the array changed; re-find it by id and bail if it is gone.
+          const curIdx = this.messages.findIndex(m => m.id === msgId);
+          if (curIdx === -1) return;
+          const first = String(raw || '').trim().toLowerCase().replace(/^[^a-zäöü]+/, '');
+          let verdict = 'unsure';
+          if (first.startsWith('ja')) verdict = 'pass';
+          else if (first.startsWith('nein')) verdict = 'fail';
+          this.messages[curIdx].trust = verdict;
+        } catch (e) {
+          const curIdx = this.messages.findIndex(m => m.id === msgId);
+          if (curIdx !== -1) this.messages[curIdx].trust = 'unknown';
+        } finally {
           this.currentAbort = null;
           this.persistSession();
         }
