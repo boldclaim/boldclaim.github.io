@@ -1352,8 +1352,9 @@
               context.docs = w.docs || [];
               // Knowledge from Pinecone, but ALWAYS keep our voice+tactics prompt
               // (do not let the worker's basic prompt overwrite it).
+              // Live method/tactics from Pinecone (worker), with the built-in block as fallback.
               const knowledge = this.knowledgeBlock(context.docs);
-              if (knowledge) context.systemPrompt = this.fallbackSystemPrompt() + '\n\n' + knowledge;
+              context.systemPrompt = this.fallbackSystemPrompt(w.method) + (knowledge ? '\n\n' + knowledge : '');
             }
           } catch (e) { /* fallback */ }
         }
@@ -1566,7 +1567,7 @@ If the draft is already clean, return it unchanged.`;
         const body = docs.map((d, i) => '[' + (i + 1) + '] (' + (d.source || 'Quelle') + ') ' + (d.snippet || '')).join('\n\n');
         return head + '\n\n' + body;
       },
-      fallbackSystemPrompt() {
+      fallbackSystemPrompt(methodOverride) {
         const lang = this.settings.lang;
         const isDE = lang === 'de';
 
@@ -1732,7 +1733,7 @@ Anti-AI rules above still apply, no contradiction with VOICE.`)
 - If user attached image, read text/context in it
 - NEVER xenophobic. No statistics that demean groups wholesale.`;
 
-        const tactics = isDE
+        const tactics = (methodOverride && methodOverride.trim().length > 30) ? methodOverride.trim() : (isDE
           ? `TAKTIK (so wird der Konter scharf, nicht nur korrekt):
 - Quelle-Bumerang ist die stärkste Waffe: zitiert der Gegner eine Studie oder Quelle, zitiere DIESELBE Quelle, aber den Teil den er nicht gelesen hat. Was die Zahl wirklich misst, nicht die Schlagzeile.
 - Inversions-Check (Pflicht bei jeder Statistik): stell dir vor der Gegner zitiert deine Zahl zurück, hilft sie ihm dann? "38% Femizide durch Deutsche" wird zu "also 62% durch Ausländer bei 15% Bevölkerung, danke". Wenn ja: andere Zahl oder anderes Framing. Ein einziges Eigentor kippt den ganzen Konter.
@@ -1752,7 +1753,7 @@ Anti-AI rules above still apply, no contradiction with VOICE.`)
 - Gut-feel anchor: one plain-language line per data counter for lurkers without statistics.
 - Academic to plain: not "negative correlation between residence status and crime", but "same people, allowed to work = less crime, banned from working = more".
 - Write for the silent lurkers, not the commenter. ONE error per counter, no lecture, max 4-5 sentences.
-- Never moralise, never sarcastic, stay flat. Counter victim-mode only with substance, never with outrage, it is their fuel.`;
+- Never moralise, never sarcastic, stay flat. Counter victim-mode only with substance, never with outrage, it is their fuel.`);
 
         return `${langTop}
 
