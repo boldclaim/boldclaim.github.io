@@ -1336,6 +1336,7 @@
           this.messages[idx].error = e.message;
         } finally {
           this.messages[idx].streaming = false;
+          if (!this.messages[idx].error) this.messages[idx].content = this.deAI(this.messages[idx].content);
           this.busy = false;
           this.currentAbort = null;
           this.persistSession();
@@ -1824,10 +1825,59 @@ ${langTop}`;
         return s.toLowerCase().normalize('NFKD').replace(/[̀-ͯ]/g, '')
           .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').slice(0, 60);
       },
+      // De-AI pass: strip the machine tells (em-dashes, filler transitions, hedges,
+      // performative openers/closers) so every answer reads in-voice. Runs on the rendered
+      // text AND on the stored text at completion (so Reddit/Plain copies are clean too).
+      // Deterministic and idempotent.
+      deAI(text) {
+        if (!text) return text;
+        let t = text;
+        // Dashes: numeric range -> hyphen, prose aside -> comma. Word-hyphens untouched.
+        t = t.replace(/(\d) ?[—–―] ?(\d)/g, '$1-$2').replace(/ ?[—–―] ?/g, ', ');
+        // Fancy punctuation -> plain
+        t = t.replace(/[“”„«»]/g, '"').replace(/[‘’‚]/g, "'").replace(/…/g, '...');
+        // Sentence-initial filler transitions -> drop, keep the clause
+        const fillers = '(?:Dar[üu]ber hinaus|Des Weiteren|Letztendlich|Letztlich|Zusammenfassend|Abschlie[ßs]end|Furthermore|Moreover|In addition|Additionally|Ultimately|Consequently|Notably|Importantly|Essentially)';
+        t = t.replace(new RegExp('(^|[.!?]\\s+|\\n+)' + fillers + ',?\\s+', 'gu'), '$1');
+        // Openers / hedges / self-reference / performative closers -> remove
+        const kill = [
+          /Das ist ein interessanter Punkt[.!,]?\s*/gi,
+          /(?:Gute|Gro[ßs]artige|Spannende) Frage[.!,]?\s*/gi,
+          /Lass mich das (?:kurz )?aufdr[öo]seln[.!,:]?\s*/gi,
+          /(?:Great|Good|Excellent|Interesting) question[.!,]?\s*/gi,
+          /That'?s an? (?:great|good|fair|valid|interesting) question[.!,]?\s*/gi,
+          /Let me break (?:this|that) down[.!,:]?\s*/gi,
+          /Es ist wichtig,? (?:zu beachten|anzumerken|zu erw[äa]hnen),?\s*(?:dass\s*)?/gi,
+          /Es sei (?:angemerkt|erw[äa]hnt),?\s*(?:dass\s*)?/gi,
+          /It'?s (?:important|worth) (?:to note|noting|mentioning)(?: that)?,?\s*/gi,
+          /It is (?:important|worth) (?:to note|noting|mentioning)(?: that)?,?\s*/gi,
+          /Als KI(?:[- ]Sprachmodell)?,?\s*/gi,
+          /As an AI(?: language model)?,?\s*/gi,
+          /(?:Ich hoffe|Hoffe),? das hilft(?: dir)?[.!]?\s*/gi,
+          /I hope (?:this|that) helps[.!]?\s*/gi,
+          /Hope (?:this|that) helps[.!]?\s*/gi,
+          /Lass(?:t)? mich wissen,? wenn[^.!?\n]*[.!?]\s*/gi,
+          /Let me know if[^.!?\n]*[.!?]\s*/gi,
+          /\bBoom[.!]?(?=\s|$)/gi,
+          /\bMic[- ]?drop[.!]?\s*/gi,
+        ];
+        for (const re of kill) t = t.replace(re, '');
+        // Word-level tells
+        t = t.replace(/\bdelve into\b/gi, 'look at').replace(/\bdelve\b/gi, 'look')
+             .replace(/\bin order to\b/gi, 'to').replace(/\ba tapestry of\b/gi, '')
+             .replace(/\bnavigate the complexit(?:y|ies)(?: of)?\b/gi, '');
+        // Re-capitalize sentence starts left lowercase by removals
+        t = t.replace(/(^|[.!?]["')\]]?\s+|\n+)(\p{Ll})/gu, (m, pre, ch) => pre + ch.toUpperCase());
+        // Tidy spacing/punctuation
+        t = t.replace(/[ \t]{2,}/g, ' ').replace(/ +([,.;:!?])/g, '$1')
+             .replace(/,\s*,/g, ',').replace(/[ \t]+\n/g, '\n').replace(/\n{3,}/g, '\n\n');
+        return t.trim();
+      },
       renderMarkdown(text) {
         if (!text) return '';
         // Strip purpose comments (extracted separately for popup) before any other processing
         text = text.replace(/<!--\s*purpose:[\s\S]*?-->/g, '');
+        text = this.deAI(text);
         let html = this.escapeHtml(text);
         // Code spans
         html = html.replace(/`([^`\n]+)`/g, '<code class="font-mono text-[0.9em] bg-zinc-100 dark:bg-zinc-800 rounded px-1">$1</code>');
