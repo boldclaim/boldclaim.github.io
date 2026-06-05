@@ -649,6 +649,15 @@
             </div>
           </div>
 
+          <div>
+            <label class="flex items-center gap-2.5 cursor-pointer select-none">
+              <input type="checkbox" x-model="settings.critic"
+                     class="w-4 h-4 rounded border-zinc-300 dark:border-zinc-700 accent-zinc-900 dark:accent-zinc-100">
+              <span class="text-sm font-medium text-zinc-700 dark:text-zinc-300" x-text="t('set.critic')"></span>
+            </label>
+            <p class="mt-1 ml-6 text-[11px] text-zinc-500 dark:text-zinc-500" x-text="t('set.criticHelp')"></p>
+          </div>
+
           <div class="grid grid-cols-2 gap-3">
             <div>
               <label class="text-xs font-medium text-zinc-500 dark:text-zinc-400 uppercase tracking-wide" x-text="t('set.platform')"></label>
@@ -992,6 +1001,7 @@
       'msg.analysisHint': '(nicht zum Posten)',
       'trust.checking': 'Prüfe Quellen ...', 'trust.pass': 'Geprüft, deckt sich mit den Quellen',
       'trust.fail': 'Vorsicht, nicht durch die Quellen gedeckt', 'trust.unsure': 'Quellenlage unklar',
+      'set.critic': 'Konter-Prüfer (Eigentor- und Quellen-Check)', 'set.criticHelp': 'Zweiter Durchgang nach jeder Antwort: prüft jede Zahl gegen die Belege, fängt Eigentore, schärft die Stimme. Kostet einen zusätzlichen API-Call pro Antwort.',
       'set.tab.general': 'Allgemein', 'set.tab.setup': 'Setup', 'set.tab.privacy': 'Privacy',
       'set.provider': 'Provider', 'set.model': 'Modell', 'set.customOpt': 'Eigenes Modell eingeben...',
       'set.customPh': 'exakter Modellname', 'set.apiKey': 'API-Key', 'set.show': 'zeigen', 'set.hide': 'verbergen',
@@ -1046,6 +1056,7 @@
       'msg.analysisHint': '(not for posting)',
       'trust.checking': 'Checking sources ...', 'trust.pass': 'Verified, matches the sources',
       'trust.fail': 'Caution, not covered by the sources', 'trust.unsure': 'Source coverage unclear',
+      'set.critic': 'Counter-checker (own-goal and source check)', 'set.criticHelp': 'A second pass after every answer: checks every number against the evidence, catches own-goals, sharpens the voice. Costs one extra API call per answer.',
       'set.tab.general': 'General', 'set.tab.setup': 'Setup', 'set.tab.privacy': 'Privacy',
       'set.provider': 'Provider', 'set.model': 'Model', 'set.customOpt': 'Enter custom model...',
       'set.customPh': 'exact model name', 'set.apiKey': 'API key', 'set.show': 'show', 'set.hide': 'hide',
@@ -1106,7 +1117,8 @@
         hardness: 'Direkt',
         selectorStyle: 'pills',
         lang: 'de',
-        voiceSample: ''
+        voiceSample: '',
+        critic: true
       },
 
       // Init
@@ -1381,12 +1393,67 @@
           this.busy = false;
           this.currentAbort = null;
           this.persistSession();
+          // Critic pass refines the answer (own-goal/inversion, grounding, voice) before the trust check verifies it.
+          // Only with retrieved evidence: without it the grounding rule would strip correct numbers from a fallback answer.
+          if (this.settings.critic && !this.messages[idx].error && this.messages[idx].content
+              && this.messages[idx].sources && this.messages[idx].sources.length) {
+            await this.criticPass(idx);
+          }
           // Trust check runs AFTER the answer is rendered, so the user never waits for it.
           // Only when the answer succeeded and the message actually has sources to check against.
           const am = this.messages[idx];
           if (am && !am.error && am.content && am.sources && am.sources.length) {
             await this.runTrustCheck(idx);
           }
+        }
+      },
+
+      // Critic pass: ONE refine call that approximates the skill's stress-test + red-team gate.
+      // Catches own-goals/inversion, enforces grounding (every number must be in the evidence),
+      // strips strawmen and screenshot-able concessions, cleans the voice. Refines in place.
+      // BYOK, runs in the user's browser via their own key, never throws.
+      async criticPass(idx) {
+        const msg = this.messages[idx];
+        if (!msg || msg.error || !msg.content) return;
+        const msgId = msg.id;
+        const isDE = this.settings.lang === 'de';
+        const comment = this.queryFromHistory();
+        const evidence = (msg.sources || []).map((s, i) =>
+          '[' + (i + 1) + '] ' + (s.source ? s.source + ': ' : '') + (s.snippet || '')
+        ).join('\n') || (isDE ? '(keine Belege abgerufen)' : '(no evidence retrieved)');
+        const sys = isDE
+          ? `Du bist ein gnadenloser Konter-Prüfer für Bold Claim. Du verbesserst den ENTWURF, du lobst nicht und erklärst deine Änderungen nicht. Gib NUR den finalen Konter zurück, im exakt gleichen Aufbau wie der Entwurf (sind ein Analyse-Teil und ein ~~~REPLY~~~-Marker vorhanden, behalte sie).
+Prüfe und fixe in dieser Reihenfolge:
+1. ERFINDUNG/GROUNDING: jede Zahl, jedes Datum, jede Quelle MUSS in den BELEGEN stehen. Aus dem Gedächtnis gerundete oder erfundene Zahlen raus oder durch belegte ersetzen. Fehlt ein Beleg, Behauptung schwächen bis sie gedeckt ist, nicht raten.
+2. EIGENTOR/INVERSION: jede Statistik invertiert prüfen. Hilft sie dem Gegner wenn er sie zurückwirft (38% durch X heißt 62% durch Y), raus oder anders framen.
+3. STROHMANN: nur kontern was der Gegner WÖRTLICH gesagt hat.
+4. KONZESSION: kein Satz der als Gegner-Screenshot funktioniert, Kontext in den Satz bauen.
+5. STIMME: keine Gedankenstriche, keine Floskeln, Punkt zuerst, max 4-5 Sätze, nicht moralisieren.
+Ist der Entwurf schon sauber, gib ihn unverändert zurück.`
+          : `You are a merciless counter-checker for Bold Claim. You IMPROVE the draft, you do not praise and do not explain your changes. Return ONLY the final counter, in the exact same structure as the draft (if an analysis part and a ~~~REPLY~~~ marker are present, keep them).
+Check and fix, in order:
+1. FABRICATION/GROUNDING: every number, date and source MUST appear in the EVIDENCE. Remove or replace memory-rounded or invented numbers with sourced ones. If a fact is missing, weaken the claim until it is covered, do not guess.
+2. OWN-GOAL/INVERSION: check every statistic inverted. If it helps the opponent when quoted back (38% by X means 62% by Y), cut or reframe it.
+3. STRAWMAN: only counter what the opponent literally said.
+4. CONCESSION: no sentence that works as their screenshot, build the context into the sentence.
+5. VOICE: no em-dashes, no filler, point first, max 4-5 sentences, do not moralise.
+If the draft is already clean, return it unchanged.`;
+        const user = (isDE ? 'GEGNER-KOMMENTAR:\n' : 'OPPONENT COMMENT:\n') + comment +
+          '\n\n' + (isDE ? 'BELEGE:\n' : 'EVIDENCE:\n') + evidence +
+          '\n\n' + (isDE ? 'ENTWURF:\n' : 'DRAFT:\n') + msg.content;
+        try {
+          const refined = await this.callProvider({ systemPrompt: sys, messages: [{ role: 'user', content: user }], stream: false });
+          const cur = this.messages.findIndex(m => m.id === msgId);
+          if (cur === -1) return;
+          const clean = this.deAI(String(refined || '').trim());
+          if (clean && clean.length > 20) {
+            this.messages[cur].content = clean;
+            this.messages[cur].refined = true;
+          }
+        } catch (e) {
+          // critic failure is non-fatal: the original draft stands
+        } finally {
+          this.persistSession();
         }
       },
 
