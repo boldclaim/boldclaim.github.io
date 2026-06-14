@@ -431,7 +431,7 @@
               <span class="text-zinc-400 dark:text-zinc-600" x-text="t('comp.cat')"></span>
               <div class="inline-flex rounded-md border border-zinc-200 dark:border-zinc-700 overflow-hidden">
                 <template x-for="c in cats" :key="'cc'+c[0]">
-                  <button type="button" @click="settings.category=c[0]; saveSettings()"
+                  <button type="button" @click="settings.category=c[0]; userOverrodePicker=true; saveSettings()"
                     class="px-2 py-1 font-medium transition border-l first:border-l-0 border-zinc-200 dark:border-zinc-700"
                     :class="settings.category===c[0] ? 'bg-indigo-600 text-white' : 'bg-white dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700'"
                     x-text="t(c[1])"></button>
@@ -440,7 +440,7 @@
               <span class="text-zinc-400 dark:text-zinc-600" x-text="t('comp.hard')"></span>
               <div class="inline-flex rounded-md border border-zinc-200 dark:border-zinc-700 overflow-hidden">
                 <template x-for="h in hards" :key="'ch'+h[0]">
-                  <button type="button" @click="settings.hardness=h[0]; saveSettings()"
+                  <button type="button" @click="settings.hardness=h[0]; userOverrodePicker=true; saveSettings()"
                     class="px-2 py-1 font-medium transition border-l first:border-l-0 border-zinc-200 dark:border-zinc-700"
                     :class="settings.hardness===h[0] ? 'bg-indigo-600 text-white' : 'bg-white dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-700'"
                     x-text="t(h[1])"></button>
@@ -456,7 +456,7 @@
                 </div>
                 <div class="grid grid-cols-3 gap-1.5">
                   <template x-for="h in hards" :key="'cr'+h[0]"><template x-for="c in cats" :key="'ccell'+c[0]+h[0]">
-                    <button type="button" :title="t(c[1])+' · '+t(h[1])" @click="settings.category=c[0]; settings.hardness=h[0]; saveSettings()"
+                    <button type="button" :title="t(c[1])+' · '+t(h[1])" @click="settings.category=c[0]; settings.hardness=h[0]; userOverrodePicker=true; saveSettings()"
                       class="w-4 h-4 rounded-full border transition"
                       :class="(settings.category===c[0]&&settings.hardness===h[0]) ? 'bg-indigo-600 border-indigo-600 scale-125' : 'border-zinc-300 dark:border-zinc-600 hover:border-indigo-400'"></button>
                   </template></template>
@@ -464,6 +464,22 @@
               </div>
               <span class="text-zinc-500 dark:text-zinc-400 font-medium" x-text="settings.category + ' · ' + settings.hardness"></span>
             </span>
+          </template>
+
+          <!-- Advisory style suggestion (Vorschlag). Never auto-applies, never hides the manual picker. -->
+          <template x-if="recoStyle">
+            <button type="button"
+                    @click="if(!userOverrodePicker) applyRecoStyle()"
+                    :title="recoReasonText()"
+                    :disabled="userOverrodePicker"
+                    class="inline-flex items-center gap-1 rounded-md border border-dashed border-amber-400/70 dark:border-amber-500/50 bg-amber-50/70 dark:bg-amber-500/10 text-amber-700 dark:text-amber-300 px-2 py-1 font-medium transition"
+                    :class="userOverrodePicker ? 'opacity-60 cursor-default' : 'hover:bg-amber-100 dark:hover:bg-amber-500/20 cursor-pointer'">
+              <span class="uppercase text-[9px] tracking-wide text-amber-600/80 dark:text-amber-400/80" x-text="t('comp.reco')"></span>
+              <span x-text="recoStyleLabel(recoStyle)"></span>
+            </button>
+          </template>
+          <template x-if="recoStyle">
+            <span class="text-zinc-400 dark:text-zinc-600 basis-full pl-1" x-text="recoReasonText()"></span>
           </template>
         </div>
 
@@ -486,6 +502,7 @@
           </button>
           <input type="file" multiple accept="image/*" x-ref="fileInput" @change="handleFiles($event)" class="hidden">
           <textarea x-model="input"
+                    @input="recommendStyle()"
                     @paste="handlePaste($event)"
                     @keydown.enter.prevent="if(!$event.shiftKey) send()"
                     @keydown.cmd.enter.prevent="send()"
@@ -989,6 +1006,7 @@
       'comp.busy': 'Boldclaim antwortet...', 'comp.attach': 'Bild anhängen',
       'comp.imgTooLarge': 'Bild zu groß (max 5 MB)', 'comp.turn': 'Turn', 'comp.turns': 'Turns',
       'comp.noKey': 'Kein API-Key, Settings öffnen',
+      'comp.reco': 'Vorschlag', 'comp.recoReason': 'Gegner schrieb kurz, Audience unklar → kurz + sachlich halten',
       'platform.reddit': 'Reddit', 'platform.twitter': 'X/Twitter', 'platform.spoken': 'Mündlich', 'platform.whatsapp': 'WhatsApp',
       'tone.factual': 'Sachlich', 'tone.snarky': 'Hämisch', 'tone.gungho': 'Gungho',
       'tone.deescalate': 'De-eskalierend', 'tone.factcheck': 'Fact-Check pur', 'tone.expose': 'Taktik entblößen', 'tone.contradiction': 'Widerspruchsfalle',
@@ -1044,6 +1062,7 @@
       'comp.busy': 'Boldclaim is replying...', 'comp.attach': 'Attach image',
       'comp.imgTooLarge': 'Image too large (max 5 MB)', 'comp.turn': 'turn', 'comp.turns': 'turns',
       'comp.noKey': 'No API key, open Settings',
+      'comp.reco': 'Suggestion', 'comp.recoReason': 'Opponent wrote short, audience unclear → keep it short and factual',
       'platform.reddit': 'Reddit', 'platform.twitter': 'X/Twitter', 'platform.spoken': 'Spoken', 'platform.whatsapp': 'WhatsApp',
       'tone.factual': 'Factual', 'tone.snarky': 'Snarky', 'tone.gungho': 'Gung-ho',
       'tone.deescalate': 'De-escalating', 'tone.factcheck': 'Fact-check only', 'tone.expose': 'Expose tactic', 'tone.contradiction': 'Contradiction trap',
@@ -1107,6 +1126,11 @@
       dark: document.documentElement.classList.contains('dark'),
       customMode: false,
       activeSection: null,
+      // Advisory style suggestion derived from the opponent comment + platform.
+      // Null = no suggestion yet. recoApplied flips true once the user clicks the chip.
+      recoStyle: null,
+      // Becomes true once the user manually touches the 3x3 picker, so the suggestion never stomps it.
+      userOverrodePicker: false,
 
       settings: {
         provider: 'anthropic',
@@ -1272,6 +1296,8 @@
             if (file) this.addImage(file);
           }
         }
+        // Text paste lands in this.input after the native input event; recompute the suggestion next tick.
+        this.$nextTick(() => this.recommendStyle());
       },
       handleDrop(e) {
         this.dragOver = false;
@@ -1329,6 +1355,9 @@
         this.messages.push(userMsg);
         this.input = '';
         this.pendingImages = [];
+        // Clear the advisory suggestion + override flag for the next comment.
+        this.recoStyle = null;
+        this.userOverrodePicker = false;
         this.persistSession();
         this.scrollDown();
 
@@ -1421,9 +1450,17 @@
         const msgId = msg.id;
         const isDE = this.settings.lang === 'de';
         const comment = this.queryFromHistory();
-        const evidence = (msg.sources || []).map((s, i) =>
-          '[' + (i + 1) + '] ' + (s.source ? s.source + ': ' : '') + (s.snippet || '')
-        ).join('\n') || (isDE ? '(keine Belege abgerufen)' : '(no evidence retrieved)');
+        const evidence = (msg.sources || []).map((s, i) => {
+          let line = '[' + (i + 1) + '] ' + (s.source ? s.source + ': ' : '') + (s.snippet || '');
+          // If this doc was armored with a pre-tested rebuttal answer, hand it to the critic so it
+          // defends with the proven line instead of improvising (and so FLANKE does not kill the point).
+          if (s.rebuttal_answer) {
+            line += '\n    ' + (isDE
+              ? 'BILLIGSTE GEGEN-REPLIK: ' + (s.rebuttal || '(unbenannt)') + '\n    GETESTETE ANTWORT: ' + s.rebuttal_answer
+              : 'CHEAPEST COMEBACK: ' + (s.rebuttal || '(unnamed)') + '\n    TESTED ANSWER: ' + s.rebuttal_answer);
+          }
+          return line;
+        }).join('\n') || (isDE ? '(keine Belege abgerufen)' : '(no evidence retrieved)');
         // Live-source fetch: pull the top source's live page (server-side via the worker) so the
         // critic can reconcile the draft's numbers against the current page and catch stale figures.
         let live = '';
@@ -1441,6 +1478,8 @@ Prüfe und fixe in dieser Reihenfolge:
 3. STROHMANN: nur kontern was der Gegner WÖRTLICH gesagt hat.
 4. KONZESSION: kein Satz der als Gegner-Screenshot funktioniert, Kontext in den Satz bauen.
 5. STIMME: keine Gedankenstriche, keine Floskeln, Punkt zuerst, max 4-5 Sätze, nicht moralisieren.
+6. FLANKE: Nenne die billigste Gegen-Replik auf diesen Konter. Beantworte sie in einem Halbsatz. Ist die Replik wahr und stark und du kannst sie nicht mit der Aktenlage schlagen → STREICHE den Punkt, statt ihn schwach zu verteidigen. Liegt zu einem Beleg eine GETESTETE ANTWORT bei, nutze sie zum Verteidigen statt zu improvisieren.
+7. FRAGILE MUSTER: Prüfe gegen aggregate-vs-per-capita, whataboutism, survivorship, cherry-picked-timeframe, appeal-to-future-tech, naked-aggregate-quote. Trifft einer zu, ist der Punkt im Zweifel raus.
 Ist der Entwurf schon sauber, gib ihn unverändert zurück.`
           : `You are a merciless counter-checker for Bold Claim. You IMPROVE the draft, you do not praise and do not explain your changes. Return ONLY the final counter, in the exact same structure as the draft (if an analysis part and a ~~~REPLY~~~ marker are present, keep them).
 Check and fix, in order:
@@ -1449,6 +1488,8 @@ Check and fix, in order:
 3. STRAWMAN: only counter what the opponent literally said.
 4. CONCESSION: no sentence that works as their screenshot, build the context into the sentence.
 5. VOICE: no em-dashes, no filler, point first, max 4-5 sentences, do not moralise.
+6. FLANK: Name the cheapest comeback to this counter. Answer it in half a sentence. If that comeback is true and strong and you cannot beat it with the record → CUT the point instead of defending it weakly. If a piece of evidence carries a TESTED ANSWER, use it to defend instead of improvising.
+7. FRAGILE PATTERNS: Check against aggregate-vs-per-capita, whataboutism, survivorship, cherry-picked-timeframe, appeal-to-future-tech, naked-aggregate-quote. If one applies, when in doubt the point is out.
 If the draft is already clean, return it unchanged.`;
         const user = (isDE ? 'GEGNER-KOMMENTAR:\n' : 'OPPONENT COMMENT:\n') + comment +
           '\n\n' + (isDE ? 'BELEGE:\n' : 'EVIDENCE:\n') + evidence +
@@ -1568,6 +1609,101 @@ If the draft is already clean, return it unchanged.`;
         return m[(this.settings.category||'Fakten')+'|'+(this.settings.hardness||'Direkt')] || '';
       },
 
+      // Map a recommended style key -> the matching {category, hardness} from cats/hards.
+      // Outcome-table mapping (frozen spec): one-line-and-leave / short-and-cold -> {Fakten,Direkt};
+      // collaborative -> {Fakten,Ruhig}; expose-the-tactic -> {Rhetorik,Gungho}.
+      recoStyleMap: {
+        'one-line-and-leave': { category: 'Fakten', hardness: 'Direkt' },
+        'short-and-cold':     { category: 'Fakten', hardness: 'Direkt' },
+        'collaborative':      { category: 'Fakten', hardness: 'Ruhig' },
+        'expose-the-tactic':  { category: 'Rhetorik', hardness: 'Gungho' }
+      },
+
+      // Advisory only. Runs on input/paste. Measures the opponent comment + reads the platform,
+      // then picks ONE recommended style. On uncertainty (audience unknown) it defaults to the
+      // SAFER, shorter / less-gungho style. Never auto-sends, never hides the manual 3x3 picker.
+      recommendStyle() {
+        const text = (this.input || '').trim();
+        if (!text) { this.recoStyle = null; return; }
+        const words = (text.match(/\S+/g) || []).length;
+        const platform = this.settings.platform;
+        // Reddit / X-Twitter are public, audience-bearing channels.
+        // WhatsApp / Mündlich are typically 1:1, audience unknown -> stay on the safer side.
+        const hasAudience = platform === 'Reddit' || platform === 'X/Twitter';
+        let style;
+        if (!hasAudience) {
+          // 1:1, no clear audience -> safer = short, sachlich, never gungho.
+          style = words <= 12 ? 'one-line-and-leave' : 'collaborative';
+        } else if (words <= 12) {
+          // Public + very short jab -> a clean one-line record-correction beats a wall of text.
+          style = 'one-line-and-leave';
+        } else if (words >= 60) {
+          // Public + long manipulative wall -> name the tactic for the lurkers.
+          style = 'expose-the-tactic';
+        } else {
+          // Public, medium length, intent unclear -> default to the SAFER short+cold lane.
+          style = 'short-and-cold';
+        }
+        this.recoStyle = style;
+      },
+
+      // Short human reason for the suggestion chip tooltip / secondary line.
+      recoReasonText() {
+        if (!this.recoStyle) return '';
+        const platform = this.settings.platform;
+        const hasAudience = platform === 'Reddit' || platform === 'X/Twitter';
+        const text = (this.input || '').trim();
+        const words = (text.match(/\S+/g) || []).length;
+        const isDE = this.settings.lang === 'de';
+        if (!hasAudience) {
+          return isDE
+            ? 'Vermutlich 1:1, Audience unklar → kurz + sachlich halten'
+            : 'Likely 1:1, audience unclear → keep it short and factual';
+        }
+        if (words <= 12) {
+          return isDE
+            ? 'Gegner schrieb kurz, eine saubere Korrektur reicht'
+            : 'Opponent wrote short, one clean correction is enough';
+        }
+        if (words >= 60) {
+          return isDE
+            ? 'Lange Wand mit Audience → Taktik für die Mitleser benennen'
+            : 'Long wall with an audience → name the tactic for the lurkers';
+        }
+        return isDE
+          ? 'Audience da, Absicht unklar → kurz + kühl, auf der sicheren Seite'
+          : 'Audience present, intent unclear → short and cold, the safe side';
+      },
+
+      // Localised label for a style key (used on the chip).
+      recoStyleLabel(style) {
+        const isDE = this.settings.lang === 'de';
+        const de = {
+          'one-line-and-leave': 'Einzeiler + raus',
+          'short-and-cold': 'Kurz + kühl',
+          'collaborative': 'Brücken bauen',
+          'expose-the-tactic': 'Taktik entblößen'
+        };
+        const en = {
+          'one-line-and-leave': 'One-liner, then leave',
+          'short-and-cold': 'Short and cold',
+          'collaborative': 'Collaborative',
+          'expose-the-tactic': 'Expose the tactic'
+        };
+        return (isDE ? de : en)[style] || style;
+      },
+
+      // Click handler: applies the recommended category+hardness, unless the user already
+      // overrode the picker manually (then the chip is informational only and does not stomp).
+      applyRecoStyle() {
+        if (!this.recoStyle) return;
+        const map = this.recoStyleMap[this.recoStyle];
+        if (!map) return;
+        this.settings.category = map.category;
+        this.settings.hardness = map.hardness;
+        this.saveSettings();
+      },
+
       // Inject the retrieved Pinecone evidence with a hard grounding rule (the website's
       // live-source discipline: only cite what is in the evidence, never from memory).
       knowledgeBlock(docs) {
@@ -1582,6 +1718,19 @@ If the draft is already clean, return it unchanged.`;
       fallbackSystemPrompt(methodOverride) {
         const lang = this.settings.lang;
         const isDE = lang === 'de';
+
+        // Length cap: the client knows the opponent comment, so size the answer to it.
+        // "One line in, one line out." Governs the shell length, never the kill-fact.
+        const lastUser = [...this.messages].reverse().find(m => m.role === 'user' && (m.content || '').trim());
+        const inputWords = lastUser ? (lastUser.content.trim().match(/\S+/g) || []).length : 0;
+        let lengthRule = '';
+        if (inputWords > 0) {
+          // Cap = max(input × 1.5, one full sentence ≈ 25 words). Length, not substance.
+          const cap = Math.max(Math.round(inputWords * 1.5), 25);
+          lengthRule = isDE
+            ? `LÄNGE: Der Gegner-Kommentar hat ${inputWords} Wörter. Halte die Antwort entsprechend kurz, höchstens etwa ${cap} Wörter im eigentlichen Reply (Teil 3). Eine Zeile auf eine Zeile. Das regelt die Länge, nicht die Substanz: die belegte Kernaussage bleibt drin, gestreckt wird nichts.`
+            : `LENGTH: The opponent comment has ${inputWords} words. Keep the answer correspondingly short, at most about ${cap} words in the actual reply (part 3). One line in, one line out. This governs length, not substance: the sourced kill-fact stays in, nothing gets padded.`;
+        }
 
         // Hard language directive — first AND last line of system prompt for emphasis
         const langTop = isDE
@@ -1774,7 +1923,7 @@ Plattform: ${platformLabel}. Sprache: ${lang}.
 
 KATEGORIE: ${cat}  HÄRTE: ${hard}
 ${toneInstruction}
-
+${lengthRule ? '\n' + lengthRule + '\n' : ''}
 ${antiAi}${voiceBlock}
 
 ${tactics}
